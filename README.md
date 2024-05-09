@@ -24,7 +24,7 @@ Compiled successfully 之后，打开浏览器，输入 http://localhost:3000 
 
 用法: git remote add [<options>] <name> <url>
 
-`git remote add origin ``git@github.com``:coolguychen/Huiban-FrontEnd.git`（注：此处用的是 SSH 下的地址）
+`git remote add origin git@github.com:coolguychen/Huiban-FrontEnd.git`（注：此处用的是 SSH 下的地址）
 
 5. 将代码提交到本地仓库
 
@@ -113,14 +113,14 @@ git checkout master
 git pull origin master
 ```
 
-1. **添加所有修改的文件并提交：**
+2. **添加所有修改的文件并提交：**
 
 ```bash
 git add .
 git commit -m "提交的注释"
 ```
 
-1. **推送更改到远程的 master 分支：**
+3. **推送更改到远程的 master 分支：**
 
 ```bash
 git push origin master
