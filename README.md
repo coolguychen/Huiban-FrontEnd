@@ -48,13 +48,13 @@ git commit -m "提交内容"
 git clone https://github.com/coolguychen/Huiban-FrontEnd
 ```
 
-1. 在控制台中，进入这个下载下来的项目文件
+4. 在控制台中，进入这个下载下来的项目文件
 
 ```
 cd huiban-frontend
 ```
 
-1. 使用下列命令查看是否与 github 仓库关联成功
+5. 使用下列命令查看是否与 github 仓库关联成功
 
 ```
 git remote -v
