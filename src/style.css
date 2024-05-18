@@ -1,109 +1,176 @@
-
 /* 设置整个页面高度占满视口 */
 html {
-    position: relative;
-    min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
 
 /* 设置页面内容区域最小高度为100%视口高度，以使 footer 粘贴在底部 */
 body {
-    margin: 0;
-    padding-bottom: 100px; /*预留 footer 高度*/
-    min-height: 100vh;
-    position: relative;
+  margin: 0;
+  padding-bottom: 100px;
+  /*预留 footer 高度*/
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 包裹 header & navbar*/
+.header-navbar-container {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between
 }
 
 /*Home Page*/
 
 .wave {
-    animation-name: wave-animation; /* Refers to the name of your @keyframes element below */
-    animation-duration: 2.1s; /* Change to speed up or slow down */
-    animation-iteration-count: infinite; /* Never stop waving :) */
-    transform-origin: 70% 70%; /* Pivot around the bottom-left palm */
-    display: inline-block;
-  }
-  
-  @keyframes wave-animation {
-    0% {
-      transform: rotate(0deg);
-    }
-    10% {
-      transform: rotate(14deg);
-    } /* The following five values can be played with to make the waving more or less extreme */
-    20% {
-      transform: rotate(-8deg);
-    }
-    30% {
-      transform: rotate(14deg);
-    }
-    40% {
-      transform: rotate(-4deg);
-    }
-    50% {
-      transform: rotate(10deg);
-    }
-    60% {
-      transform: rotate(0deg);
-    } /* Reset for the last half to pause */
-    100% {
-      transform: rotate(0deg);
-    }
+  animation-name: wave-animation;
+  /* Refers to the name of your @keyframes element below */
+  animation-duration: 2.1s;
+  /* Change to speed up or slow down */
+  animation-iteration-count: infinite;
+  /* Never stop waving :) */
+  transform-origin: 70% 70%;
+  /* Pivot around the bottom-left palm */
+  display: inline-block;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: rotate(0deg);
   }
 
+  10% {
+    transform: rotate(14deg);
+  }
+
+  /* The following five values can be played with to make the waving more or less extreme */
+  20% {
+    transform: rotate(-8deg);
+  }
+
+  30% {
+    transform: rotate(14deg);
+  }
+
+  40% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+
+  60% {
+    transform: rotate(0deg);
+  }
+
+  /* Reset for the last half to pause */
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 .home-content {
-    padding: 0rem 1rem !important;
-    text-align: left;
+  padding: 0rem 1rem !important;
+  text-align: left;
 }
 
 .home-header {
-    padding-top: 0rem;
+  padding-top: 0rem;
 }
+
+/* Navbar */
+
+.navbar {
+  margin-top: 20px;
+  font-size: 20px !important;
+}
+
+.navbar-nav .nav-link {
+  color: rgb(221, 221, 226) !important;
+  color: rgb(0, 0, 0) !important;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.mynavbar form input {
+  width: 180px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.435);
+  border: 0px solid rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+  color: #040000;
+  padding: 12px 26px;
+  font-weight: 450;
+  font-size: 14px;
+  transition: 0.3s ease-in-out;
+}
+
+.mynavbar form input:focus {
+  background: rgba(255, 255, 255, 1);
+  border: 0;
+}
+
+.mynavbar form button {
+  width: 100px;
+  height: 40px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #2936c6;
+  border: 0;
+  font-size: 17px;
+  border-radius: 15px;
+  z-index: 1;
+  margin-right: 60px;
+  position: relative;
+  transition: 0.3s ease-in-out;
+}
+
 
 /* --------- */
 /* Footer */
 /* --------- */
 .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: transparent;
-    margin-top: 30px !important;
-    margin-bottom: 30px !important;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: transparent;
+  margin-top: 30px !important;
+  margin-bottom: 20px !important;
 }
 
 .footer-copywright {
-    color: rgb(143, 143, 143);
-    text-align: center !important;
+  color: rgb(143, 143, 143);
+  text-align: center !important;
 }
 
 .footer-body {
-    z-index: 1;
-    text-align: center !important;
+  z-index: 1;
+  text-align: center !important;
 }
 
 @media (max-width: 767px) {
-    .footer-copywright {
-        text-align: center !important;
-    }
+  .footer-copywright {
+    text-align: center !important;
+  }
 
-    .footer-body {
-        text-align: center !important;
-    }
+  .footer-body {
+    text-align: center !important;
+  }
 }
 
 .footer h3 {
-    font-size: 1em;
-    color: white !important;
-    margin-top: 0.5em !important;
-    margin-bottom: 0.5em !important;
+  color: white !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
 }
 
 .footer-icons {
-    margin-top: 0.5em !important;
-    margin-bottom: 0.5em !important;
-    padding: 0 !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+  padding: 0 !important;
 }
 
 .blockquote-footer {
-    color: #a588c0 !important;
+  color: #a588c0 !important;
 }

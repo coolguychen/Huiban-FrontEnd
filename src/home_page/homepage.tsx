@@ -2,27 +2,30 @@
 
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
-// import Cat from "../../Assets/image/cat.svg";
+import Research from "../assets/images/research.png"
 
 function HomePage() {
   return (
-    <section>
-        <Container className="home-content">
-          <Row>
-            <Col className="home-header">
-              <h1>Weclome to Huiban!{" "} 
-                <span className="wave" role="img" aria-labelledby="wave">👋🏻</span>
-              </h1>
-            </Col>
 
-            <Col>
-              {/* <img src={Cat} style={{ height: '500px' }} /> */}
-            </Col>
-          </Row>
-        </Container>
+    <>
+      <div>
+      // TODO1: 受欢迎的会议列表
+      // TODO2：受欢迎的期刊列表
+      </div>
 
-        {/* 显示近期 期刊 & 会议的资讯 */}
-    </section>
+      <div>
+      // TODO3: 截稿临近的10个会议
+      // TODO4：截稿临近的10个期刊
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', height: '80vh' }}>
+        <Col style={{ position: 'absolute', right: '20px' }}>
+          <img src={Research} style={{ height: '200px' }} />
+        </Col>
+      </div>
+
+    </>
+
   );
 }
 
