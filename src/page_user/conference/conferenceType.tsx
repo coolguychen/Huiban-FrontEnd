@@ -12,9 +12,6 @@ export type Conference = {
     abstractDeadline: Date; //摘要DDL
     paperDeadline: Date; //全文DDL
     startTime: Date; //开始时间
-    followNum: number; //关注人数
     acceptedRate: number; //接受率
-    sessionNum: number; //届数
-    topicDetail: string;
     isPostponed: boolean; // 是否延期
 }

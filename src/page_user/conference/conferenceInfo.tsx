@@ -1,9 +1,12 @@
 //TODO： 展示全部CCF会议
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Input, InputRef, Space, Button, Modal, Form, Table, Select, message } from 'antd';
 import { Conference } from './conferenceType'
-import { HeartFilled } from '@ant-design/icons';
+import { SearchOutlined, HeartFilled } from '@ant-design/icons';
 import { render } from '@testing-library/react';
+import { Link } from 'react-router-dom';
+import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
+import Highlighter from 'react-highlight-words';
 
 
 
@@ -13,7 +16,7 @@ const conferences: Conference[] = [
         title: "CIKM",
         fullTitle: "ACM International Conference on Information and Knowledge Management 2024",
         ccfRank: "B",
-        sub: "Data",
+        sub: "数据库/数据挖掘/内容检索",
         year: 2024,
         dblpLink: "", // 填入对应链接
         mainpageLink: "https://cikm2024.org/",
@@ -30,6 +33,7 @@ const conferences: Conference[] = [
 ];
 
 
+type DataIndex = keyof Conference;
 
 const ConferenceInfo: React.FC = () => {
     //分页默认值，记得import useState
@@ -54,21 +58,118 @@ const ConferenceInfo: React.FC = () => {
         })
     }
 
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef<InputRef>(null);
+
+    const handleSearch = (
+        selectedKeys: string[],
+        confirm: (param?: FilterConfirmProps) => void,
+        dataIndex: DataIndex,
+    ) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+
+    const handleReset = (clearFilters: () => void) => {
+        clearFilters();
+        setSearchText('');
+    };
+
+
+    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Conference> => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        搜索
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        重置
+                    </Button>
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        关闭
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered: boolean) => (
+            <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes((value as string).toLowerCase()),
+        onFilterDropdownOpenChange: visible => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
+        render: text =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{ backgroundColor: 'gold', padding: 0 }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+
     // 定义列
     const columns = [
         {
-            title: 'Title',
+            title: '简称',
             dataIndex: 'title',
             key: 'title',
+            render: (text, record) => (
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}> 
+                    {text}
+                </Link>
+            ),
         },
         {
-            title: 'Full Title',
+            title: '全称',
             dataIndex: 'fullTitle',
             key: 'fullTitle',
+            ...getColumnSearchProps('fullTitle'), // 添加搜索
             render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
         },
         {
-            title: 'CCF',
+            title: '类型',
+            dataIndex: 'sub',
+            key: 'sub',
+        },
+        {
+            title: 'CCF等级',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
@@ -87,28 +188,46 @@ const ConferenceInfo: React.FC = () => {
                         backgroundColor = 'honeydew';
                         break;
                     default:
-                        backgroundColor = '';
+                        backgroundColor = 'grey';
+                        ccfRank = 'N'
                 }
 
                 return (
                     <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
                 );
             },
+
+            filters: [
+                {
+                    text: 'A',
+                    value: 'A',
+                },
+                {
+                    text: 'B',
+                    value: 'B',
+                },
+                {
+                    text: 'C',
+                    value: 'C',
+                },
+            ],
+            onFilter: (value, record) => record.ccfRank === value,
+
         },
         {
-            title: 'Year',
+            title: '年份',
             dataIndex: 'year',
             key: 'year',
             render: (year) => {
                 let backgroundColor;
-                if(year <  2024) {
+                if (year < 2024) {
                     backgroundColor = 'LightGrey'
                 }
 
                 else if (year = 2024) {
                     backgroundColor = 'LightCyan'
                 }
-                else{
+                else {
                     backgroundColor = 'Lavender'
                 }
 
@@ -116,12 +235,13 @@ const ConferenceInfo: React.FC = () => {
             }
         },
         {
-            title: 'Location',
+            title: '地点',
             dataIndex: 'place',
             key: 'place',
+            render: place => <span>📍{place}</span>,
         },
         {
-            title: 'isPostponed',
+            title: '延期',
             dataIndex: 'isPostponed',
             key: 'isPostponed',
             render: (isPostponed) => {
@@ -131,30 +251,25 @@ const ConferenceInfo: React.FC = () => {
             }
         },
         {
-            title: 'Abstract Deadline',
+            title: '摘要DDL',
             dataIndex: 'abstractDeadline',
             key: 'abstractDeadline',
             render: date => <span>{date.toDateString()}</span>,
         },
         {
-            title: 'Paper Deadline',
+            title: '全文DDL',
             dataIndex: 'paperDeadline',
             key: 'paperDeadline',
             render: date => <span>{date.toDateString()}</span>,
         },
         {
-            title: 'Start Time',
+            title: '开会时间',
             dataIndex: 'startTime',
             key: 'startTime',
             render: date => <span>{date.toDateString()}</span>,
         },
         {
-            title: 'Session Number',
-            dataIndex: 'sessionNum',
-            key: 'sessionNum',
-        },
-        {
-            title: 'Star',
+            title: '收藏',
             key: 'star',
             render: () => <HeartFilled style={{ color: 'red' }} />, // 收藏按钮
         }

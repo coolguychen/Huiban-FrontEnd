@@ -8,7 +8,6 @@ export type Journal = {
     paperDeadline: Date; //截稿日期
     impactFactor: number; //影响因子
     publisher: string; //出版社
-    followNum: number; //关注人数
 }
 
 export default Journal

@@ -174,3 +174,96 @@ body {
 .blockquote-footer {
   color: #a588c0 !important;
 }
+
+/*详情页*/
+.flex-container {
+  display: flex;
+  height: 100vh;
+  /* 让容器占据整个视窗高度 */
+}
+
+.left-sidebar {
+  flex: 3;
+  /* 左侧占据 3/4 空间 */
+  /* background-color: lightblue; */
+  /* 左侧样式 */
+}
+
+.right-sidebar {
+  flex: 1;
+  /* 右侧占据 1/4 空间 */
+  /* background-color: lightcoral; */
+  /* 右侧样式 */
+}
+
+.detail-card {
+  /* background-color: #f9f9f9; */
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+}
+
+.detail-card h2 {
+  color: #333;
+  font-size: 16px;
+}
+
+.detail-card p {
+  margin: 8px 0;
+  color: gray;
+  font-size: 12px;
+}
+
+.detail-card a {
+  margin: 5px 0;
+  color: rgb(92, 145, 243);
+  font-size: 12px;
+}
+
+.overview-card {
+  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);  border: 1px solid #ddd;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+}
+
+.overview-card text {
+  margin: 5px 2px 5px 2px;
+  color: gray;
+  font-size: 12px;
+  justify-content: left;
+  line-height: 2.0; /* 设置行间距为 1.5倍字体大小，可以根据需要调整 */
+}
+
+.comment-area {
+  
+  padding: 15px;
+  margin: 10px;
+}
+
+.personal-card {
+  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%); background-blend-mode: screen;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+}
+
+.follow-card {
+  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%); background-blend-mode: screen;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+}
