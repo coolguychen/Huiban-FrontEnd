@@ -182,28 +182,29 @@ body {
   /* 让容器占据整个视窗高度 */
 }
 
+/* 左侧样式 */
 .left-sidebar {
-  flex: 3;
+  flex: 4;
   /* 左侧占据 3/4 空间 */
   /* background-color: lightblue; */
-  /* 左侧样式 */
 }
 
+/* 右侧样式 */
 .right-sidebar {
   flex: 1;
   /* 右侧占据 1/4 空间 */
   /* background-color: lightcoral; */
-  /* 右侧样式 */
 }
 
+/*详细信息*/
 .detail-card {
-  /* background-color: #f9f9f9; */
-  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%); */
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
   border-radius: 13px;
   padding: 15px;
   margin: 10px;
   /* 添加阴影效果 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
 }
 
@@ -224,13 +225,22 @@ body {
   font-size: 12px;
 }
 
+/*征稿信息*/
+.call {
+  padding: 5px;
+  text-align: left;
+  margin-left: 10px;
+}
+
 .overview-card {
-  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);  border: 1px solid #ddd;
+  /* background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);  border: 1px solid #ddd; */
+  background-color: rgba(249, 249, 249, 0.5);
+  /* 使用 RGBA 表示颜色和透明度，0.7 表示 70% 的不透明度 */
   border-radius: 13px;
   padding: 15px;
   margin: 10px;
   /* 添加阴影效果 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
 }
 
@@ -239,31 +249,149 @@ body {
   color: gray;
   font-size: 12px;
   justify-content: left;
-  line-height: 2.0; /* 设置行间距为 1.5倍字体大小，可以根据需要调整 */
+  line-height: 2.0;
+  /* 设置行间距为 1.5倍字体大小，可以根据需要调整 */
+}
+
+
+/*评论区*/
+.comment {
+  padding: 5px;
+  text-align: left;
+  margin-left: 10px;
 }
 
 .comment-area {
-  
   padding: 15px;
   margin: 10px;
 }
 
-.personal-card {
-  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%); background-blend-mode: screen;
+.follow-btn {
+  background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
   border-radius: 13px;
   padding: 15px;
   margin: 10px;
   /* 添加阴影效果 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+  display: flex;
+}
+
+.follow-btn span {
+  flex: 1
+}
+
+.follow-btn text {
+  flex: 3;
+  font-weight: bold;
+}
+
+.participate-btn {
+  background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
+  border-radius: 13px;
+  background-blend-mode: screen;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+  display: flex;
+}
+
+.participate-btn span {
+  flex: 1
+}
+
+.participate-btn text {
+  flex: 3;
+  font-weight: bold;
 }
 
 .follow-card {
-  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255,255,255,0.50) 47%, rgba(0,0,0,0.50) 100%); background-blend-mode: screen;
+  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255, 255, 255, 0.50) 47%, rgba(0, 0, 0, 0.50) 100%);
+  background-blend-mode: screen;
   border-radius: 13px;
   padding: 15px;
   margin: 10px;
   /* 添加阴影效果 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* 水平偏移量，垂直偏移量，模糊半径，阴影颜色（使用 rgba 表示颜色和透明度）*/
+}
+
+.follow-card .star-btn {
+  display: flex;
+}
+
+.follow-card .star-btn span {
+  flex: 1
+}
+
+.follow-card .star-btn text {
+  flex: 3;
+  font-weight: bold;
+}
+
+.follow-card .follow-list {
+  margin-top: 10px;
+}
+
+.basic-info {
+  background-color: rgba(249, 249, 249, 0.5);
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info {
+  text-align: left;
+  margin-left: 10px;
+}
+
+.basic-info p {
+  padding: 0px;
+}
+
+.basic-info text {
+  padding: 5px;
+  text-align: left;
+  margin-left: 10px;
+}
+
+/*头像样式*/
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  height: 100px;
+  padding: 10px;
+  /* 适当调整容器高度 */
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*个人信息页右侧*/
+.tools-card {
+  background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
+  background-blend-mode: screen;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

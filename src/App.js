@@ -39,7 +39,7 @@ function App() {
 					<Route path='/journals' element={<JournalInfo />} />
 					<Route path='/journalDetail/:id' element={<JournalDetail />} />
 
-					<Route path='/my' element={<UserInfo />} />
+					<Route path='/user' element={<UserInfo />} />
 					<Route path='/login' element={<Login />} />
 					<Route path='/register' element={<Register />} />
 				</Routes>

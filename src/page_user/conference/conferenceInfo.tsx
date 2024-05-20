@@ -169,12 +169,12 @@ const ConferenceInfo: React.FC = () => {
             key: 'sub',
         },
         {
-            title: 'CCF等级',
+            title: 'CCF',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
-                if (!ccfRank) return null; // 如果 ccfRank 为空，则不渲染
+                if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
 
                 let backgroundColor;
                 switch (ccfRank) {
@@ -235,12 +235,6 @@ const ConferenceInfo: React.FC = () => {
             }
         },
         {
-            title: '地点',
-            dataIndex: 'place',
-            key: 'place',
-            render: place => <span>📍{place}</span>,
-        },
-        {
             title: '延期',
             dataIndex: 'isPostponed',
             key: 'isPostponed',
@@ -251,13 +245,13 @@ const ConferenceInfo: React.FC = () => {
             }
         },
         {
-            title: '摘要DDL',
+            title: '摘要截止日期',
             dataIndex: 'abstractDeadline',
             key: 'abstractDeadline',
             render: date => <span>{date.toDateString()}</span>,
         },
         {
-            title: '全文DDL',
+            title: '全文截止日期',
             dataIndex: 'paperDeadline',
             key: 'paperDeadline',
             render: date => <span>{date.toDateString()}</span>,
@@ -269,18 +263,18 @@ const ConferenceInfo: React.FC = () => {
             render: date => <span>{date.toDateString()}</span>,
         },
         {
-            title: '收藏',
-            key: 'star',
-            render: () => <HeartFilled style={{ color: 'red' }} />, // 收藏按钮
-        }
+            title: '地点',
+            dataIndex: 'place',
+            key: 'place',
+            render: place => <span>📍{place}</span>,
+        },
     ];
 
 
     return (
 
         <div>
-            <h3>CCF Conferences</h3>
-
+            <h3 className='info'>CCF Conferences</h3>
             <Table columns={columns} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
         </div>
     );

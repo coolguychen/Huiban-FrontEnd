@@ -43,7 +43,7 @@ const NavBar = () => {
                         <Nav.Link as={Link} to={"/journals"} style={linkStyle}>期刊</Nav.Link>
                     </Nav.Item>
                     <Nav.Item style={{ margin: '0 20px 0 10px' }}>
-                        <Nav.Link as={Link} to={"/my"} style={linkStyle}>我的</Nav.Link>
+                        <Nav.Link as={Link} to={"/user"} style={linkStyle}>我的</Nav.Link>
                     </Nav.Item>
                 </Nav>
             </Container>

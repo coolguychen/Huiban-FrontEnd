@@ -1,6 +1,6 @@
 // 维护用户个人信息
-export type userType = {
-    email: string;
-    imageUrl: string;
-    institution: string
+export type User = {
+    email: string; //邮箱
+    imageUrl: string; //头像
+    institution: string; //科研机构
 }

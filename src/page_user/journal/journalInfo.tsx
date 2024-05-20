@@ -143,7 +143,7 @@ const JournalInfo: React.FC = () => {
             render: (text, record) => <Link to={`/journalDetail/${record.journalId}`}>{text}</Link>,//点击全称 跳转到期刊详情页
         },
         {
-            title: 'CCF等级',
+            title: 'CCF',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
@@ -202,20 +202,16 @@ const JournalInfo: React.FC = () => {
             title: '出版社',
             dataIndex: 'publisher',
             key: 'publisher',
-            // render: date => <span>{date.toDateString()}</span>,
+            render: publisher => <span>📚{publisher}</span>,
         },
-        {
-            title: '收藏',
-            key: 'star',
-            render: () => <HeartFilled style={{ color: 'red' }} />, // 收藏按钮
-        }
+
     ];
 
 
     return (
 
         <div>
-            <h3>CCF Journals</h3>
+            <h3 className='info'>CCF Journals</h3>
             <Table columns={columns} dataSource={journals} style={{ margin: 16 }} pagination={paginationProps} />
         </div>
     );
