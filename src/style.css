@@ -20,8 +20,6 @@ body {
   justify-content: space-between
 }
 
-/*Home Page*/
-
 .wave {
   animation-name: wave-animation;
   /* Refers to the name of your @keyframes element below */
@@ -70,6 +68,7 @@ body {
   }
 }
 
+/*header*/
 .home-content {
   padding: 0rem 1rem !important;
   text-align: left;
@@ -139,7 +138,7 @@ body {
   margin-bottom: 20px !important;
 }
 
-.footer-copywright {
+.footer-copyright {
   color: rgb(143, 143, 143);
   text-align: center !important;
 }
@@ -147,16 +146,6 @@ body {
 .footer-body {
   z-index: 1;
   text-align: center !important;
-}
-
-@media (max-width: 767px) {
-  .footer-copywright {
-    text-align: center !important;
-  }
-
-  .footer-body {
-    text-align: center !important;
-  }
 }
 
 .footer h3 {
@@ -175,7 +164,73 @@ body {
   color: #a588c0 !important;
 }
 
-/*详情页*/
+
+/*首页*/
+.popular {
+  display: flex;
+  
+}
+
+.popular-conferences {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.popular-journals {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.left-sidebar text{
+  text-align: left;
+  padding: 5px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.latest-conferences{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.latest-journals{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
 .flex-container {
   display: flex;
   height: 100vh;
@@ -196,7 +251,9 @@ body {
   /* background-color: lightcoral; */
 }
 
-/*详细信息*/
+/*详细页*/
+
+/*详情信息*/
 .detail-card {
   background-color: rgba(249, 249, 249, 0.5);
   /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
@@ -336,8 +393,10 @@ body {
   margin-top: 10px;
 }
 
+/* 个人信息 */
 .basic-info {
-  background-color: rgba(249, 249, 249, 0.5);
+  /* background-color: rgba(249, 249, 249, 0.5); */
+  background-image: linear-gradient(to top, rgba(223, 233, 243, 0.4) 0%, rgba(255, 255, 255, 0.6) 100%);
   border-radius: 13px;
   padding: 15px;
   margin: 10px;
@@ -359,8 +418,26 @@ body {
   margin-left: 10px;
 }
 
-/*头像样式*/
+.edit-profile {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 
+.edit-profile input {
+  width: 500px;
+  margin-top: 8px;
+  /* padding: 10px; */
+}
+
+.edit-profile button {
+  /* width: 500px; */
+  margin-top: 10px;
+  /* padding: 10px; */
+}
+
+
+/*头像样式*/
 .avatar-container {
   display: flex;
   justify-content: center;

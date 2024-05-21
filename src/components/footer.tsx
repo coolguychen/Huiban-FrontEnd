@@ -3,9 +3,18 @@ import { Container } from "react-bootstrap";
 
 function Footer() {
   return (
-    <Container className="footer">
-      <div className="footer-copywright"> copyright@ECNU蛋仔派队</div>
-    </Container>
+    // <Container className="footer">
+
+    //   
+
+    // </Container>
+
+    <footer className="footer">
+      <div className="footer-copyright">
+        copyright@ECNU蛋仔派队
+      </div>
+    </footer>
+
   );
 }
 

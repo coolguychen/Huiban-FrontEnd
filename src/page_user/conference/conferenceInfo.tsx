@@ -24,10 +24,7 @@ const conferences: Conference[] = [
         abstractDeadline: new Date("2024-05-13"),
         paperDeadline: new Date("2024-07-16"),
         startTime: new Date("2024-10-21"),
-        followNum: 25, // 添加关注人数
         acceptedRate: 0.22, // 添加接受率
-        sessionNum: 33,
-        topicDetail: "Information retrieval in the era of LLMs,Open-ended QA systems, Fairness, Accountability, Transparency, Ethics, and Explainability in Information and Knowledge Management", // 填入主题细节
         isPostponed: false
     },
 ];
@@ -268,6 +265,11 @@ const ConferenceInfo: React.FC = () => {
             key: 'place',
             render: place => <span>📍{place}</span>,
         },
+        {
+            title: '接受率',
+            dataIndex: 'acceptedRate',
+            key: 'acceptedRate',
+        }
     ];
 
 

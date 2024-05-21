@@ -22,8 +22,7 @@ const journals: Journal[] = [
         specialIssue: "Special Issue on Data Analytics",
         paperDeadline: new Date("2024-06-30"),
         impactFactor: 4.5,
-        publisher: "Elsevier",
-        followNum: 100
+        publisher: "Elsevier"
     },
 ];
 
