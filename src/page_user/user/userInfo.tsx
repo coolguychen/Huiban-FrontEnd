@@ -2,10 +2,9 @@ import React, { useState } from "react"
 import { User } from "./userType"
 import { Link } from "react-router-dom";
 import { Conference } from "../conference/conferenceType";
-import { Button, Input, Table } from "antd";
+import { Button, Input, Table, Modal, Space, Popconfirm } from "antd";
 import Journal from "../journal/journalType";
-import { UserOutlined } from '@ant-design/icons';
-
+import { DeleteOutlined } from '@ant-design/icons';
 
 const exampleUser: User = {
     userName: "example",
@@ -48,6 +47,20 @@ const starJournals: Journal[] = [
 
 const UserInfo: React.FC = () => {
 
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [recordToDelete, setRecordToDelete] = useState(null);
+
+    const handleDelete = () => {
+        // 在这里调用删除接口
+        console.log('调用删除接口');
+        setDeleteModalVisible(false);
+    };
+
+    // 表格单页时隐藏分页器
+    const paginationProps = {
+        hideOnSinglePage: true
+    }
+    
 
     // 定义会议列
     const conferenceCol = [
@@ -153,6 +166,22 @@ const UserInfo: React.FC = () => {
             key: 'place',
             render: place => <span>📍{place}</span>,
         },
+        {
+            title: '操作',
+            key: 'action',
+            render: (text, record) => (
+                <Space>
+                    <Popconfirm
+                        title="确定要删除吗？"
+                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        okText="确认"
+                        cancelText="取消"
+                    >
+                        <DeleteOutlined style={{ color: 'red' }} />
+                    </Popconfirm>
+                </Space>
+            ),
+        },
     ];
 
     // 定义期刊列
@@ -225,7 +254,22 @@ const UserInfo: React.FC = () => {
             key: 'publisher',
             render: publisher => <span>📚{publisher}</span>,
         },
-
+        {
+            title: '操作',
+            key: 'action',
+            render: (text, record) => (
+                <Space>
+                    <Popconfirm
+                        title="确定要删除吗？"
+                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        okText="确认"
+                        cancelText="取消"
+                    >
+                        <DeleteOutlined style={{ color: 'red' }} />
+                    </Popconfirm>
+                </Space>
+            ),
+        },
     ];
 
     const [editing, setEditing] = useState(false);
@@ -266,7 +310,7 @@ const UserInfo: React.FC = () => {
                                 onChange={handleChange} placeholder="邮箱" />
                             <Input type="text" name="institution" value={editedUser.institution}
                                 onChange={handleChange} placeholder="科研机构" />
-                            <Button type="primary"  onClick={handleSave}>保存</Button>
+                            <Button type="primary" onClick={handleSave}>保存</Button>
                         </div>
                     ) : (
                         <div>
@@ -283,21 +327,24 @@ const UserInfo: React.FC = () => {
                 <div className="follow-conference">
                     <h3 className="info">⭐ 收藏的会议</h3>
                     <div className="follow-list">
-                        <Table columns={conferenceCol} dataSource={starConferences} style={{ margin: 16 }} />
+                        <Table columns={conferenceCol} dataSource={starConferences} 
+                        style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
 
                 <div className="attend-conference">
                     <h3 className="info">🧑‍💻 参加的会议</h3>
                     <div className="attend-list">
-                        <Table columns={conferenceCol} dataSource={starConferences} style={{ margin: 16 }} />
+                        <Table columns={conferenceCol} dataSource={starConferences} 
+                        style={{ margin: 16 }} pagination={paginationProps}  />
                     </div>
                 </div>
 
                 <div className="follow-journal">
                     <h3 className="info">🧡 收藏的期刊</h3>
                     <div className="follow-list">
-                        <Table columns={journalCols} dataSource={starJournals} style={{ margin: 16 }} />
+                        <Table columns={journalCols} dataSource={starJournals} 
+                        style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
 
