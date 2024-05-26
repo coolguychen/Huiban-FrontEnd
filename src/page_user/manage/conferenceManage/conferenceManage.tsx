@@ -1,11 +1,9 @@
-//TODO： 展示全部CCF会议
-import React, { useRef, useState } from 'react';
-import { Input, InputRef, Space, Button, Table } from 'antd';
-import { Conference } from './conferenceType'
-import { SearchOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
-import Highlighter from 'react-highlight-words';
+import React, { useState } from "react"
+import { Conference } from "../../conference/conferenceType";
+import { Link } from "react-router-dom";
+import { Popconfirm, Space, Table } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+
 
 
 
@@ -29,9 +27,8 @@ const conferences: Conference[] = [
 ];
 
 
-type DataIndex = keyof Conference;
+const ConferenceManage: React.FC = () => {
 
-const ConferenceInfo: React.FC = () => {
     //分页默认值，记得import useState
     const [pageOption, setPageOption] = useState({
         pageNo: 1,  //当前页为1
@@ -54,91 +51,19 @@ const ConferenceInfo: React.FC = () => {
         })
     }
 
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef<InputRef>(null);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [recordToDelete, setRecordToDelete] = useState(null);
 
-    const handleSearch = (
-        selectedKeys: string[],
-        confirm: (param?: FilterConfirmProps) => void,
-        dataIndex: DataIndex,
-    ) => {
-        confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
+    const handleDelete = () => {
+        // 在这里调用删除接口
+        console.log('调用删除接口');
+        setDeleteModalVisible(false);
     };
 
-    const handleReset = (clearFilters: () => void) => {
-        clearFilters();
-        setSearchText('');
-    };
+    const handleEdit = () => {
+        console.log('弹出编辑的表单？');
+    }
 
-
-    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Conference> => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-                <Input
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-                    style={{ marginBottom: 8, display: 'block' }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
-                        搜索
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
-                        重置
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        关闭
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered: boolean) => (
-            <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-        ),
-        onFilter: (value, record) =>
-            record[dataIndex]
-                .toString()
-                .toLowerCase()
-                .includes((value as string).toLowerCase()),
-        onFilterDropdownOpenChange: visible => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        render: text =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{ backgroundColor: 'gold', padding: 0 }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
-    });
 
     // 定义列
     const columns = [
@@ -147,7 +72,7 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'title',
             key: 'title',
             render: (text, record) => (
-                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}> 
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
                     {text}
                 </Link>
             ),
@@ -156,7 +81,6 @@ const ConferenceInfo: React.FC = () => {
             title: '全称',
             dataIndex: 'fullTitle',
             key: 'fullTitle',
-            ...getColumnSearchProps('fullTitle'), // 添加搜索
             render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
         },
         {
@@ -187,12 +111,10 @@ const ConferenceInfo: React.FC = () => {
                         backgroundColor = 'grey';
                         ccfRank = 'N'
                 }
-
                 return (
                     <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
                 );
             },
-
             filters: [
                 {
                     text: 'A',
@@ -268,17 +190,36 @@ const ConferenceInfo: React.FC = () => {
             title: '接受率',
             dataIndex: 'acceptedRate',
             key: 'acceptedRate',
-        }
+        },
+        {
+            title: '操作',
+            key: 'action',
+            render: (text, record) => (
+                <Space>
+                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit()} />
+                    <Popconfirm
+                        title="确定要删除吗？"
+                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        okText="确认"
+                        cancelText="取消"
+                    >
+                        <DeleteOutlined style={{ color: 'red' }} />
+                    </Popconfirm>
+
+
+                </Space>
+            ),
+        },
     ];
 
-
     return (
-
         <div>
-            <h3 className='info'>CCF Conferences</h3>
+            <h3>CCF会议管理</h3>
             <Table columns={columns} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
         </div>
-    );
+    )
+
 }
 
-export default ConferenceInfo;
+
+export default ConferenceManage

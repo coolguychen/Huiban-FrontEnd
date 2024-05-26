@@ -14,7 +14,9 @@ import Footer from './components/footer.tsx'
 import "./style.css";
 import "./App.css";
 import HomeHeader from './components/header.tsx'
-
+import Manage from './page_user/manage/manage.tsx'
+import ConferenceManage from './page_user/manage/conferenceManage/conferenceManage.tsx'
+import JournalManage from './page_user/manage/journalManage.tsx/journalManage.tsx'
 
 function App() {
 	// const userLogin = useSelector(state => state.userLogin)
@@ -42,6 +44,8 @@ function App() {
 					<Route path='/user' element={<UserInfo />} />
 					<Route path='/login' element={<Login />} />
 					<Route path='/register' element={<Register />} />
+
+					<Route path='/manage/*' element={<Manage />} />
 				</Routes>
 			</div>
 			<Footer />
