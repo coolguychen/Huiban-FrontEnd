@@ -164,6 +164,94 @@ body {
   color: #a588c0 !important;
 }
 
+/*注册*/
+.register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  /* 让容器占满整个视口高度80% */
+}
+
+.register-card {
+  margin-left: 100px;
+  position: relative;
+  width: 550px;
+  height: 400px;
+  background-color: rgba(249, 249, 249, 0.5);
+  border-radius: 13px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.register-card form {
+  width: 400px;
+  /* 设置表单的宽度 */
+}
+
+.login-link {
+  font-size: 14px;
+  color: grey;
+  position: absolute;
+  right: 25px;
+  bottom: 20px;
+}
+
+/*登录*/
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  /* 让容器占满整个视口高度80% */
+}
+
+.login-card {
+  margin-left: 80px;
+  position: relative;
+  width: 550px;
+  height: 350px;
+  background-color: rgba(249, 249, 249, 0.5);
+  border-radius: 13px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.login-card form {
+  width: 400px;
+  /* 设置表单的宽度 */
+}
+
+.manager-login-link {
+  font-size: 14px;
+  color: grey;
+  position: absolute;
+  left: 25px;
+  bottom: 20px;
+}
+
+.manager-login-card {
+  margin-left: 80px;
+  position: relative;
+  width: 500px;
+  height: 300px;
+  background-color: rgba(249, 249, 249, 0.5);
+  border-radius: 13px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
 /*首页*/
 .popular {
@@ -328,9 +416,11 @@ body {
 
 .comment-container {
   padding: 5px;
-  border-bottom: 1.5px solid #ddd; /* 添加分割线 */
+  border-bottom: 1.5px solid #ddd;
+  /* 添加分割线 */
   padding-top: 10px;
-  padding-bottom: 5x; /* 可选：为分割线添加间距 */
+  padding-bottom: 5x;
+  /* 可选：为分割线添加间距 */
 }
 
 .comment-container .user-info {
@@ -366,7 +456,7 @@ body {
 /*评论内容*/
 .comment-container .comment-content {
   text-align: left;
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
   line-height: 1.5;
   margin-left: 20px;
   margin-right: 15px;

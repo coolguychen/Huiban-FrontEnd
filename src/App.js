@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import HomePage from './home_page/homepage.tsx'
 import ConferenceInfo from './page_user/conference/conferenceInfo.tsx'
 import ConferenceDetail from './page_user/conference/conferenceDetail.tsx'
@@ -15,13 +15,11 @@ import "./style.css";
 import "./App.css";
 import HomeHeader from './components/header.tsx'
 import Manage from './page_user/manage/manage.tsx'
-import ConferenceManage from './page_user/manage/conferenceManage/conferenceManage.tsx'
-import JournalManage from './page_user/manage/journalManage.tsx/journalManage.tsx'
+import ManagerLogin from './page_user/login/managerlogin.tsx';
 
 function App() {
-	// const userLogin = useSelector(state => state.userLogin)
-	// const { userInfo } = userLogin
-
+	const userLogin = useSelector(state => state.userLogin)
+	const { userInfo } = userLogin
 
 	return (
 		<BrowserRouter>
@@ -45,6 +43,7 @@ function App() {
 					<Route path='/login' element={<Login />} />
 					<Route path='/register' element={<Register />} />
 
+					<Route path='/managerLogin' element= {<ManagerLogin />} />
 					<Route path='/manage/*' element={<Manage />} />
 				</Routes>
 			</div>
