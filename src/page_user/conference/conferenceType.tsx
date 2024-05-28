@@ -11,7 +11,8 @@ export type Conference = {
     place: string;
     abstractDeadline: Date; //摘要DDL
     paperDeadline: Date; //全文DDL
-    startTime: Date; //开始时间
+    startTime: Date; //开始时间'
+    endTime: Date; //结束时间
     acceptedRate: number; //接受率
     isPostponed: boolean; // 是否延期
 }

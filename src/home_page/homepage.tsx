@@ -24,6 +24,7 @@ const popularConferences: Conference[] = [
     abstractDeadline: new Date("2024-05-13"),
     paperDeadline: new Date("2024-07-16"),
     startTime: new Date("2024-10-21"),
+    endTime: new Date("2024-11-21"),
     acceptedRate: 0.22, // 添加接受率
     isPostponed: false
   },
@@ -221,6 +222,12 @@ function HomePage() {
       key: 'startTime',
       render: date => <span>{date.toDateString()}</span>,
     },
+    {
+      title: '结束时间',
+      dataIndex: 'endTime',
+      key: 'endTime',
+      render: date => <span>{date.toDateString()}</span>,
+  },
     {
       title: '地点',
       dataIndex: 'place',

@@ -27,6 +27,7 @@ const starConferences: Conference[] = [
         abstractDeadline: new Date("2024-05-13"),
         paperDeadline: new Date("2024-07-16"),
         startTime: new Date("2024-10-21"),
+        endTime: new Date("2024-10-21"),
         acceptedRate: 0.22, // 添加接受率
         isPostponed: false
     },
