@@ -1,6 +1,6 @@
-// import axios from "axios"
+import axios from "axios"
 
-export const login = (email, password) => async (dispatch) => {
+export const login = (username, email, password) => async (dispatch) => {
     try {
         dispatch({
             type: 'USER_LOGIN_REQUEST'
@@ -9,72 +9,73 @@ export const login = (email, password) => async (dispatch) => {
         const config = {
             headers: {
                 'content-Type': 'application/json'
-                
             }
         }
 
         const remember = false
-        // const  data  = await axios.patch(
-        //     'https://xxx/user/login',
-        //     { email, password ,remember },
-        //     config
-        // )
+        const data = await axios.patch(
+            'https://xxx/user/login',
+            { username,email, password},
+            config
+        )
 
-        // dispatch({
-        //     type: 'USER_LOGIN_SUCCESS',
-        //     payload: data,
-        // })
-
-
-        // localStorage.setItem('userInfo', JSON.stringify(data))
+        dispatch({
+            type: 'USER_LOGIN_SUCCESS',
+            payload: data,
+        })
+        localStorage.setItem('userInfo', JSON.stringify(data))
     } catch (error) {
-    //     dispatch({
-    //         type: 'USER_LOGIN_FAIL',
-    //         payload:
-    //            error.response && error.response.data.message
-    //            ? error.response.data.message
-    //            : error.message
-    //     })
+        dispatch({
+            type: 'USER_LOGIN_FAIL',
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+        })
     }
 }
 
+
+// 退出登录的函数
 export const logout = () => (dispatch) => {
     localStorage.removeItem('userInfo')
     dispatch({ type: 'USER_LOGIN_OUT' })
 }
 
-export const register = (email, password, role, userClass) => async (dispatch) => {
+// 注册的函数
+export const register = (usename, email, password) => async (dispatch) => {
     try {
-        // dispatch({
-        //     type: 'USER_REGISTER_REQUEST'
-        // })
+        dispatch({
+            type: 'USER_REGISTER_REQUEST'
+        })
 
-        // const config = {
-        //     headers: {
-        //         'content-Type': 'application/json'
-        //     }
-        // }
+        const config = {
+            headers: {
+                'content-Type': 'application/json'
+            }
+        }
 
-        // const { data } = await axios.post(
-        //     'https://xxx/user/register',
-        //     { email, password, role, userClass },
-        //     config
-        // )
+        // 注册
+        const { data } = await axios.post(
+            'https://xxx/user/register', // 调用注册的api
+            { usename, email, password },
+            config
+        )
 
-        // dispatch({
-        //     type: 'USER_REGISTER_SUCCESS',
-        //     payload: data,
-        // })
-        // console.log({email, password, role, userClass})
-        // localStorage.setItem('userRegisterInfo', JSON.stringify(data))
+        dispatch({
+            type: 'USER_REGISTER_SUCCESS',
+            payload: data,
+        })
+        localStorage.setItem('userRegisterInfo', JSON.stringify(data))
     } catch (error) {
-        // dispatch({
-        //     type: 'USER_REGISTER_FAIL',
-        //     payload:
-        //        error.response && error.response.data.message
-        //        ? error.response.data.message
-        //        : error.message
-        // })
+        // 注册失败！
+        dispatch({
+            type: 'USER_REGISTER_FAIL',
+            payload:
+                error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+        })
     }
 }
 

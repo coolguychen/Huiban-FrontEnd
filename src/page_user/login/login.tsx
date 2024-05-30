@@ -1,21 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Col } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Research from "../../assets/images/explore1.png"
+import { useDispatch, useSelector } from 'react-redux';
+import { login, registerout } from '../../reducer/action';
 
 
 
 const Login: React.FC = () => {
+    
+    const [username,setUsername] = useState<string>('');
+    const [email,setEmail] = useState<string>('');
+    const [password,setPassword] = useState<string>('');
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         password: '',
-        confirmPassword: ''
     });
+    const [wrongMessage, setWrongMessage] = useState<string>('');
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-    const onFinish = (values: any) => {
-        console.log('Received values:', values);
+    // 从 redux 拿到全局的 userInfo state
+    const userLogin = useSelector((state:any) => state.userLogin)
+    const { error, userInfo } = userLogin
+    const userRegister = useSelector((state:any) => state.userRegister)
+    const { userRegisterInfo } = userRegister
+
+    // 检测到登录成功就跳转到 home
+    useEffect(() => {
+        if(error=='邮箱或密码错误') {
+            setWrongMessage('Wrong password or wrong email!');
+        } else {
+            setWrongMessage('Account does not exist!')
+        }
+        
+        if(userInfo) {
+            console.log(userInfo)
+            navigate('/',{replace: true}) // 登录成功，成功进入当前页面
+        }
+    },[userInfo,error])
+
+    const onFinish = (e) => {
+        console.log('Received values:', e.values);
         // 在这里处理登录逻辑，可以进行数据验证、发送至后端等操作
+        e.preventDefault()
+        // 执行登录动作
+        dispatch(login(username, email, password))
+        dispatch(registerout())
     };
 
     return (
@@ -32,7 +64,10 @@ const Login: React.FC = () => {
                         label="用户名"
                         rules={[{ required: true, message: '请输入用户名!' }]}
                     >
-                        <Input />
+                        <Input onChange={(e)=>{
+                            console.log(e.target.value)
+                            setUsername(e.target.value)}
+                         } />
                     </Form.Item>
 
                     <Form.Item
@@ -40,7 +75,7 @@ const Login: React.FC = () => {
                         label="邮箱"
                         rules={[{ type: 'email', message: '请输入有效的邮箱地址!' }, { required: true, message: '请输入邮箱!' }]}
                     >
-                        <Input />
+                        <Input onChange={(e)=>setEmail(e.target.value)}/>
                     </Form.Item>
 
                     <Form.Item
@@ -49,9 +84,8 @@ const Login: React.FC = () => {
                         rules={[{ required: true, message: '请输入密码!' }]}
                         hasFeedback
                     >
-                        <Input.Password />
+                        <Input.Password onChange={(e)=>setPassword(e.target.value)}/>
                     </Form.Item>
-
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit" style={{marginTop: "10px"}}>

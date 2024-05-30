@@ -5,6 +5,8 @@ import { Conference } from "../conference/conferenceType";
 import { Button, Input, Table, Modal, Space, Popconfirm } from "antd";
 import Journal from "../journal/journalType";
 import { DeleteOutlined } from '@ant-design/icons';
+import { useDispatch } from "react-redux";
+import { logout } from "../../reducer/action";
 
 const exampleUser: User = {
     userName: "example",
@@ -50,6 +52,7 @@ const UserInfo: React.FC = () => {
 
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [recordToDelete, setRecordToDelete] = useState(null);
+    const dispatch = useDispatch();
 
     const handleDelete = () => {
         // 在这里调用删除接口
@@ -61,7 +64,7 @@ const UserInfo: React.FC = () => {
     const paginationProps = {
         hideOnSinglePage: true
     }
-    
+
 
     // 定义会议列
     const conferenceCol = [
@@ -290,6 +293,10 @@ const UserInfo: React.FC = () => {
         setEditedUser({ ...editedUser, [name]: value });
     };
 
+    const handleLogout = () => {
+        dispatch(logout())
+    }
+
 
 
     return (
@@ -304,13 +311,22 @@ const UserInfo: React.FC = () => {
                     </div>
                     {editing ? (
                         <div className="edit-profile">
-                            <Input type="text" name="userName" value={editedUser.userName}
-                                onChange={handleChange}
-                                placeholder="用户名" />
-                            <Input type="text" name="email" value={editedUser.email}
-                                onChange={handleChange} placeholder="邮箱" />
-                            <Input type="text" name="institution" value={editedUser.institution}
-                                onChange={handleChange} placeholder="科研机构" />
+                            <div>
+                                <span>📝用户名：</span>
+                                <Input type="text" name="userName" value={editedUser.userName}
+                                    onChange={handleChange}
+                                    placeholder="用户名" />
+                            </div>
+                            <div>
+                                <span>📧邮箱：</span>
+                                <Input type="text" name="email" value={editedUser.email}
+                                    onChange={handleChange} placeholder="邮箱" />
+                            </div>
+                            <div>
+                                <span>🏢科研机构: </span>
+                                <Input type="text" name="institution" value={editedUser.institution}
+                                    onChange={handleChange} placeholder="科研机构" />
+                            </div>
                             <Button type="primary" onClick={handleSave}>保存</Button>
                         </div>
                     ) : (
@@ -328,25 +344,29 @@ const UserInfo: React.FC = () => {
                 <div className="follow-conference">
                     <h3 className="info">⭐ 收藏的会议</h3>
                     <div className="follow-list">
-                        <Table columns={conferenceCol} dataSource={starConferences} 
-                        style={{ margin: 16 }} pagination={paginationProps} />
+                        <Table columns={conferenceCol} dataSource={starConferences}
+                            style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
 
                 <div className="attend-conference">
                     <h3 className="info">🧑‍💻 参加的会议</h3>
                     <div className="attend-list">
-                        <Table columns={conferenceCol} dataSource={starConferences} 
-                        style={{ margin: 16 }} pagination={paginationProps}  />
+                        <Table columns={conferenceCol} dataSource={starConferences}
+                            style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
 
                 <div className="follow-journal">
                     <h3 className="info">🧡 收藏的期刊</h3>
                     <div className="follow-list">
-                        <Table columns={journalCols} dataSource={starJournals} 
-                        style={{ margin: 16 }} pagination={paginationProps} />
+                        <Table columns={journalCols} dataSource={starJournals}
+                            style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
+                </div>
+
+                <div>
+                    <Button className="logout" type="primary" ghost onClick={handleLogout}>退出登录</Button>
                 </div>
 
 
