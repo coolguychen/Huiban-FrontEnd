@@ -24,10 +24,10 @@ const Register: React.FC = () => {
         confirmPassword: ''
     });
 
-    const onFinish = (e) => {
-        e.preventDefault()
+    const onFinish = (values, e) => {
+        // e.preventDefault()
         dispatch(register(username, email, password))
-        console.log('Received values:', e.values);
+        console.log('Received values:', values);
         // 在这里处理注册逻辑，可以进行数据验证、发送至后端等操作
     };
 

@@ -41,13 +41,14 @@ const Login: React.FC = () => {
         }
     },[userInfo,error])
 
-    const onFinish = (e) => {
-        console.log('Received values:', e.values);
+    const onFinish = (values, e) => {
+        console.log('Received values:', values);
         // 在这里处理登录逻辑，可以进行数据验证、发送至后端等操作
-        e.preventDefault()
+        // e.preventDefault()
         // 执行登录动作
-        dispatch(login(username, email, password))
-        dispatch(registerout())
+        console.log(email, password)
+        dispatch(login(email, password))
+        // dispatch(registerout())
     };
 
     return (
@@ -59,7 +60,7 @@ const Login: React.FC = () => {
                     onFinish={onFinish}
                     scrollToFirstError
                 >
-                    <Form.Item
+                    {/* <Form.Item
                         name="username"
                         label="用户名"
                         rules={[{ required: true, message: '请输入用户名!' }]}
@@ -68,10 +69,10 @@ const Login: React.FC = () => {
                             console.log(e.target.value)
                             setUsername(e.target.value)}
                          } />
-                    </Form.Item>
+                    </Form.Item> */}
 
                     <Form.Item
-                        name="email"
+                        name="username"
                         label="邮箱"
                         rules={[{ type: 'email', message: '请输入有效的邮箱地址!' }, { required: true, message: '请输入邮箱!' }]}
                     >

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Table, Space, Popconfirm } from 'antd';
+import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, DatePicker, InputNumber } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Journal from "../../journal/journalType";
 import { Link } from "react-router-dom";
@@ -16,6 +16,11 @@ const journalData: Journal[] = [
         publisher: "Elsevier"
     },
 ];
+
+
+const { TextArea } = Input;
+const { Option } = Select;
+
 
 const JournalManage: React.FC = () => {
     //分页默认值，记得import useState
@@ -144,11 +149,92 @@ const JournalManage: React.FC = () => {
         console.log('弹出编辑的表单？');
     }
 
+    const [form] = Form.useForm();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const handleAddJournal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleSubmit = (values) => {
+        onCreate(values);
+        form.resetFields();
+    };
+
 
     return (
         <>
             <h3>CCF期刊管理</h3>
+            <Button className="addRecord" type="primary" ghost onClick={handleAddJournal}>添加期刊</Button>
             <Table columns={columns} dataSource={journalData} />
+            <Modal title="添加期刊"
+                open={isModalVisible}
+                okText="添加"
+                cancelText="取消"
+                onOk={() => {
+                    form.validateFields()
+                        .then((values) => {
+                            form.resetFields();
+                            handleSubmit(values);
+                        })
+                        .catch((info) => {
+                            console.log('Validation failed:', info);
+                        });
+                }}
+                onCancel={handleCancel}
+            >
+                {/* Your meeting form component goes here */}
+                <Form form={form} layout="vertical">
+
+                    <Row gutter={16}>
+                        <Col span={8}>
+                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入期刊标题' }]}>
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="year" label="年份" rules={[{ required: true }]}>
+                                <DatePicker picker="year" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="ccfRank" label="CCF 排名" rules={[{ required: true, message: '请选择CCF排名' }]}>
+                                <Select>
+                                    <Option value="">请选择</Option>
+                                    <Option value="A">A</Option>
+                                    <Option value="B">B</Option>
+                                    <Option value="C">C</Option>
+                                    <Option value="null">NULL</Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Form.Item name="fullTitle" label="全称">
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="dblplink" label="DBLP链接">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="mainpagelink" label="主页链接">
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="paperDeadline" label="期刊截止时间">
+                        <DatePicker showTime />
+                    </Form.Item>
+                   
+                    <Form.Item name="topicDetails" label="期刊详情">
+                        <TextArea rows={5} />
+                    </Form.Item>
+
+                </Form>
+            </Modal>
         </>
 
     )

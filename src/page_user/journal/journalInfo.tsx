@@ -1,5 +1,5 @@
 //TODO： 展示全部CCF期刊
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input, InputRef, Space, Button, Table, } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import { SearchOutlined, } from '@ant-design/icons';
@@ -8,25 +8,50 @@ import Journal from './journalType';
 import { Link } from 'react-router-dom';
 import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import moment from 'moment';
 
 
 type DataIndex = keyof Journal;
 
-
-const journals: Journal[] = [
-    {
-        journalId: "IS",
-        fullTitle: "Information Systems",
-        ccfRank: "A",
-        mainpageLink: "http://www.journals.elsevier.com/information-systems/",
-        specialIssue: "Special Issue on Data Analytics",
-        paperDeadline: new Date("2024-06-30"),
-        impactFactor: 4.5,
-        publisher: "Elsevier"
-    },
-];
-
 const JournalInfo: React.FC = () => {
+    const userLogin = useSelector((state: any) => state.userLogin)
+    console.log(userLogin)
+    const token = userLogin.userInfo.data.token;
+    const [journals, setJournals] = useState<Journal[]>([]);
+    console.log(token)
+    useEffect(() => {
+        axios.get('http://124.220.14.106:9001/api/journals/list', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                let records = data.data;
+                console.log(records)
+                let journalTmp: Journal[] = [];
+                for (let i = 0; i < records.length; i++) {
+                    journalTmp.push({
+                        journalId: records[i].conferenceId,
+                        ccfRank: records[i].ccfRank,
+                        sub: records[i].sub,
+                        publisher: records[i].publisher,
+                        impactFactor: records[i].impactFactor
+                    });
+                }
+                setJournals(journalTmp);
+                console.log(journalTmp)
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }, []);
+
     //分页默认值，记得import useState
     const [pageOption, setPageOption] = useState({
         pageNo: 1,  //当前页为1
@@ -133,18 +158,20 @@ const JournalInfo: React.FC = () => {
     });
 
     // 定义列
-    const columns = [
+    const journalCols = [
         {
-            title: '期刊全称',
-            dataIndex: 'fullTitle',
-            key: 'fullTitle',
-            ...getColumnSearchProps('fullTitle'), // 添加搜索
+            title: '📜期刊',
+            dataIndex: 'journalId',
+            key: 'journalId',
+            align: 'center',
+            ...getColumnSearchProps('journalId'), // 添加搜索
             render: (text, record) => <Link to={`/journalDetail/${record.journalId}`}>{text}</Link>,//点击全称 跳转到期刊详情页
         },
         {
-            title: 'CCF',
+            title: '🏆CCF',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
+            align: 'center',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
                 if (!ccfRank) return null; // 如果 ccfRank 为空，则不渲染
@@ -185,33 +212,32 @@ const JournalInfo: React.FC = () => {
             ],
             onFilter: (value, record) => record.ccfRank === value,
         },
+        // {
+        //     title: '⏰截稿时间',
+        //     dataIndex: 'paperDeadline',
+        //     key: 'paperDeadline',
+        //     align: 'center',
+        //     render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        // },
         {
-            title: '截稿时间',
-            dataIndex: 'paperDeadline',
-            key: 'paperDeadline',
-            render: date => <span>{date.toDateString()}</span>,
-        },
-        {
-            title: '影响因子',
+            title: '🎯影响因子',
             dataIndex: 'impactFactor',
             key: 'impactFactor',
-            render: impactFactor => <span>🎯{impactFactor}</span>,
+            align: 'center'
         },
         {
-            title: '出版社',
+            title: '📚出版社',
             dataIndex: 'publisher',
             key: 'publisher',
-            render: publisher => <span>📚{publisher}</span>,
+            align: 'center'
         },
-
     ];
-
 
     return (
 
         <div>
             <h3 className='info'>CCF Journals</h3>
-            <Table columns={columns} dataSource={journals} style={{ margin: 16 }} pagination={paginationProps} />
+            <Table columns={journalCols} dataSource={journals} style={{ margin: 16 }} pagination={paginationProps} />
         </div>
     );
 }

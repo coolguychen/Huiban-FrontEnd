@@ -44,7 +44,7 @@ function App() {
 					<Route path='/journals' element={<JournalInfo />} />
 					<Route path='/journalDetail/:id' element={userInfo ? <JournalDetail /> : <Login />} />
 
-					<Route path='/user' element={<UserInfo />} />
+					<Route path='/user' element={userInfo ? <UserInfo /> : <Login />} />
 					<Route path='/login' element={<Login />} />
 					<Route path='/register' element={<Register />} />
 

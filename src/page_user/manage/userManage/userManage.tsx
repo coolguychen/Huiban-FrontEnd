@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Space } from 'antd';
+import React, { useState } from 'react';
+import { Table, Space, Button, Form, Modal, Input } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const UserManage: React.FC = () => {
@@ -35,10 +35,57 @@ const UserManage: React.FC = () => {
         console.log('Delete clicked for key:', key);
     };
 
+    const [form] = Form.useForm();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const handleAddUser = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleSubmit = (values) => {
+        onCreate(values);
+        form.resetFields();
+    };
+
+
     return (
         <>
             <h3>用户管理</h3>
+            <Button className="addRecord" type="primary" ghost onClick={handleAddUser}>添加用户</Button>
             <Table dataSource={userData} columns={columns} />
+            <Modal title="添加用户"
+                open={isModalVisible}
+                okText="添加"
+                cancelText="取消"
+                onOk={() => {
+                    form.validateFields()
+                        .then((values) => {
+                            form.resetFields();
+                            handleSubmit(values);
+                        })
+                        .catch((info) => {
+                            console.log('Validation failed:', info);
+                        });
+                }}
+                onCancel={handleCancel}
+            >
+                {/* Your meeting form component goes here */}
+                <Form form={form} layout="vertical">
+                    <Form.Item name="username" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="email" label='邮箱' rules={[{ type:'email', required: true, message: '请输入邮箱' }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="password" label="密码" rules={[{ required: true, message: '请输入密码' }]}>
+                        <Input.Password />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </>
     );
 };

@@ -1,27 +1,21 @@
 //TODO： 展示全部CCF会议
-import React, { useEffect, useRef, useState } from 'react';
-import { Input, InputRef, Space, Button, Table } from 'antd';
-import { Conference } from './conferenceType'
-import { SearchOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Table } from 'antd';
 import { Link } from 'react-router-dom';
-import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
-import Highlighter from 'react-highlight-words';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { Conference } from '../page_user/conference/conferenceType';
 import moment from 'moment';
-import { render } from '@testing-library/react';
 
 
-type DataIndex = keyof Conference;
-
-const ConferenceInfo: React.FC = () => {
+const RecentConferences: React.FC = () => {
     const userLogin = useSelector((state: any) => state.userLogin)
     console.log(userLogin)
     const token = userLogin.userInfo.data.token;
-    const [conferences, setConferences] = useState<Conference[]>([]);
+    const [recentConferences, setRecentConferences] = useState<Conference[]>([]);
     console.log(token)
     useEffect(() => {
-        axios.get('http://124.220.14.106:9001/api/conferences/list', {
+        axios.get('http://124.220.14.106:9001/api/conferences/recentList', {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
                 'Authorization': "Bearer " + token
@@ -50,7 +44,7 @@ const ConferenceInfo: React.FC = () => {
                         isPostponed: records[i].isPostponed// 是否延期
                     });
                 }
-                setConferences(conferenceTmp);
+                setRecentConferences(conferenceTmp);
                 console.log(conferenceTmp)
             })
             .catch(error => {
@@ -58,115 +52,13 @@ const ConferenceInfo: React.FC = () => {
             });
     }, []);
 
-    //分页默认值，记得import useState
-    const [pageOption, setPageOption] = useState({
-        pageNo: 1,  //当前页为1
-        pageSize: 10, //一页10行
-    })
-
-    //分页配置
+    // 在只有一页的情况下隐藏分页器
     const paginationProps = {
-        current: pageOption.pageNo,
-        pageSize: pageOption.pageSize,
-        onChange: (current, size) => paginationChange(current, size)
+        hideOnSinglePage: true
     }
 
-    //当翻页时，改变当前为第current页，current和size这两参数是onChange API自带的，会帮你算出来你现在在第几页，这一页有多少行数据。
-    const paginationChange = async (current, size) => {
-        //前面用到useState
-        setPageOption({
-            pageNo: current, //当前所在页面
-            pageSize: size,  //一页有几行
-        })
-    }
-
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef<InputRef>(null);
-
-    const handleSearch = (
-        selectedKeys: string[],
-        confirm: (param?: FilterConfirmProps) => void,
-        dataIndex: DataIndex,
-    ) => {
-        confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
-    };
-
-    const handleReset = (clearFilters: () => void) => {
-        clearFilters();
-        setSearchText('');
-    };
-
-    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Conference> => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-                <Input
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-                    style={{ marginBottom: 8, display: 'block' }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
-                        搜索
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
-                        重置
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        关闭
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered: boolean) => (
-            <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-        ),
-        onFilter: (value, record) =>
-            record[dataIndex]
-                .toString()
-                .toLowerCase()
-                .includes((value as string).toLowerCase()),
-        onFilterDropdownOpenChange: visible => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        render: text =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{ backgroundColor: 'gold', padding: 0 }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
-    });
-
-    // 定义列
-    const conferenceCols = [
+    // 近期会议列
+    const recentConfCol = [
         {
             title: '📙简称',
             dataIndex: 'conferenceId',
@@ -183,7 +75,6 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'fullTitle',
             key: 'fullTitle',
             align: 'center',
-            ...getColumnSearchProps('fullTitle'), // 添加搜索
             render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
         },
         {
@@ -222,22 +113,6 @@ const ConferenceInfo: React.FC = () => {
                     <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
                 );
             },
-
-            filters: [
-                {
-                    text: 'A',
-                    value: 'A',
-                },
-                {
-                    text: 'B',
-                    value: 'B',
-                },
-                {
-                    text: 'C',
-                    value: 'C',
-                },
-            ],
-            onFilter: (value, record) => record.ccfRank === value,
         },
         {
             title: '❓延期',
@@ -294,13 +169,11 @@ const ConferenceInfo: React.FC = () => {
         }
     ];
 
-    return (
 
-        <div>
-            <h3 className='info'>CCF Conferences</h3>
-            <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
-        </div>
+    return (
+        <Table columns={recentConfCol} dataSource={recentConferences}
+            style={{ margin: 16 }} pagination={paginationProps} />
     );
 }
 
-export default ConferenceInfo;
+export default RecentConferences;

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Conference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
-import { Popconfirm, Space, Table } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Row, Select, Space, Table } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 
@@ -26,6 +26,9 @@ const conferences: Conference[] = [
         isPostponed: false
     },
 ];
+
+const { TextArea } = Input;
+const { Option } = Select;
 
 
 const ConferenceManage: React.FC = () => {
@@ -64,6 +67,22 @@ const ConferenceManage: React.FC = () => {
     const handleEdit = () => {
         console.log('弹出编辑的表单？');
     }
+
+    const [form] = Form.useForm();
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const handleAddConference = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleSubmit = (values) => {
+        onCreate(values);
+        form.resetFields();
+    };
 
 
     // 定义列
@@ -216,7 +235,98 @@ const ConferenceManage: React.FC = () => {
     return (
         <div>
             <h3>CCF会议管理</h3>
+            <Button className="addRecord" type="primary" ghost onClick={handleAddConference}>添加会议</Button>
             <Table columns={columns} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
+            <Modal title="添加会议"
+                open={isModalVisible}
+                okText="添加"
+                cancelText="取消"
+                onOk={() => {
+                    form.validateFields()
+                        .then((values) => {
+                            form.resetFields();
+                            handleSubmit(values);
+                        })
+                        .catch((info) => {
+                            console.log('Validation failed:', info);
+                        });
+                }}
+                onCancel={handleCancel}
+                >
+                {/* Your meeting form component goes here */}
+                <Form form={form} layout="vertical">
+
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="year" label="年份" rules={[{ required: true }]}>
+                                <DatePicker picker="year" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="session" label="届数" rules={[{ required: true, message: '请输入会议标题' }]}>
+                                <InputNumber />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="ccfRank" label="CCF 排名" rules={[{ required: true, message: '请选择CCF排名' }]}>
+                                <Select>
+                                    <Option value="">请选择</Option>
+                                    <Option value="A">A</Option>
+                                    <Option value="B">B</Option>
+                                    <Option value="C">C</Option>
+                                    <Option value="null">NULL</Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="fullTitle" label="全称">
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="dblplink" label="DBLP链接">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="mainpagelink" label="主页链接">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="place" label="开会地址">
+                        <Input />
+                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="abstractDeadline" label="摘要截止时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="paperDeadline" label="论文截止时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="startTime" label="会议开始时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="endTime" label="会议结束时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="topicDetails" label="会议详情">
+                        <TextArea rows={5} />
+                    </Form.Item>
+
+                </Form>
+            </Modal>
         </div>
     )
 

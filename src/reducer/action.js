@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const login = (username, email, password) => async (dispatch) => {
+export const login = (username, password) => async (dispatch) => {
     try {
         dispatch({
             type: 'USER_LOGIN_REQUEST'
@@ -12,18 +12,19 @@ export const login = (username, email, password) => async (dispatch) => {
             }
         }
 
-        const remember = false
-        const data = await axios.patch(
-            'https://xxx/user/login',
-            { username,email, password},
+        // 使用 POST 方法，除非你的 API 设计要求使用 PATCH
+        const response = await axios.post(
+            'http://124.220.14.106:9001/auth/login',
+            { username, password },
             config
-        )
+        );
 
         dispatch({
             type: 'USER_LOGIN_SUCCESS',
-            payload: data,
+            payload: response.data,
         })
-        localStorage.setItem('userInfo', JSON.stringify(data))
+        console.log(response.data); // 打印数据部分
+        localStorage.setItem('userInfo', JSON.stringify(response.data))
     } catch (error) {
         dispatch({
             type: 'USER_LOGIN_FAIL',
@@ -38,8 +39,11 @@ export const login = (username, email, password) => async (dispatch) => {
 
 // 退出登录的函数
 export const logout = () => (dispatch) => {
+    const response = axios.get('http://124.220.14.106:9001/auth/logout')
+    console.log("退出登录")
     localStorage.removeItem('userInfo')
     dispatch({ type: 'USER_LOGIN_OUT' })
+    
 }
 
 // 注册的函数
@@ -57,7 +61,7 @@ export const register = (usename, email, password) => async (dispatch) => {
 
         // 注册
         const { data } = await axios.post(
-            'https://xxx/user/register', // 调用注册的api
+            'http://124.220.14.106:9001/auth/register', // 调用注册的api
             { usename, email, password },
             config
         )
@@ -77,9 +81,4 @@ export const register = (usename, email, password) => async (dispatch) => {
                     : error.message
         })
     }
-}
-
-export const registerout = () => (dispatch) => {
-    localStorage.removeItem('userRegisterInfo')
-    dispatch({ type: 'USER_REGISTER_OUT' })
 }
