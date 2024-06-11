@@ -60,7 +60,7 @@ const RecentConferences: React.FC = () => {
     // 近期会议列
     const recentConfCol = [
         {
-            title: '📙简称',
+            title: '📙会议',
             dataIndex: 'conferenceId',
             key: 'conferenceId',
             align: 'center',
@@ -70,13 +70,13 @@ const RecentConferences: React.FC = () => {
                 </Link>
             ),
         },
-        {
-            title: '📖全称',
-            dataIndex: 'fullTitle',
-            key: 'fullTitle',
-            align: 'center',
-            render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
-        },
+        // {
+        //     title: '📖全称',
+        //     dataIndex: 'fullTitle',
+        //     key: 'fullTitle',
+        //     align: 'center',
+        //     render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
+        // },
         // {
         //     title: '🏷️类型',
         //     dataIndex: 'sub',

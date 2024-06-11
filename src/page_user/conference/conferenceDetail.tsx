@@ -57,7 +57,7 @@ const comments = [
     },
 ];
 
-type StarConference  = {
+type StarConference = {
     conferenceId: string,
     ccfRank: string
 }
@@ -88,11 +88,51 @@ const ConferenceDetail: React.FC = () => {
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [isAttended, setIsAttended] = useState(false); // 初始状态设为未参加
     const [followConferences, setFollowConferences] = useState<StarConference[]>([]);
-    
+    const getStarList = () => {
+        // 获取用户收藏的会议列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                console.log(data.data);
+                let records = data.data;
+                console.log(records)
+                let followConferences: Conference[] = records.followConferences
+                let attendConferences: Conference[] = records.attendConferences
+                // 过滤掉 null 和 undefined
+                setFollowConferences(followConferences.filter(item => item != null))
+                // 判断是否已经收藏/参加了该会议
+                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
+                console.log(conferenceInFollowList)
+                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
+                console.log(conferenceInAttendList)
+                setIsFollowed(conferenceInFollowList);
+                setIsAttended(conferenceInAttendList);
+                return {conferenceInFollowList, conferenceInAttendList}
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }
+
     // 表示本页的会议
-    const [thisConference, setThisConference] = useState<StarConference>({conferenceId: "", ccfRank: ""});
+    const [thisConference, setThisConference] = useState<StarConference>({ conferenceId: "", ccfRank: "" });
 
     useEffect(() => {
+        console.log('更新前的状态:', isFollowed);
+        getStarList();
+        console.log('更新后的状态:', isFollowed);
+        // 设置延时执行获取会议详情
+        getConferenceDetails();
+    }, [isFollowed]);
+
+    const getConferenceDetails = () => {
         // 获取会议详情
         axios.get('http://124.220.14.106:9001/api/conferences/list/' + id + '/detail', {
             headers: {
@@ -125,40 +165,7 @@ const ConferenceDetail: React.FC = () => {
                 setThisConference({
                     conferenceId: records.conferenceId,
                     ccfRank: records.ccfRank
-                });                
-            })
-            .catch(error => {
-                console.log('Error', error.message);
-            });
-
-        getStarList()
-
-    }, []);
-
-    const getStarList = () => {
-        // 获取用户收藏列表
-        axios.get('http://124.220.14.106:9001/api/users/info', {
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-                'Authorization': "Bearer " + token
-            },
-        })
-            .then(response => {
-                console.log(response);
-                let data = response.data;
-                console.log(data)
-                console.log(data.data);
-                let records = data.data;
-                console.log(records)
-                let followConferences: Conference[] = records.followConferences
-                let attendConferences: Conference[] = records.attendConferences
-                setFollowConferences(followConferences)
-                // 判断是否已经收藏/参加了该会议
-                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
-                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
-                setIsFollowed(conferenceInFollowList);
-                console.log(isFollowed)
-                setIsAttended(conferenceInAttendList);
+                });
             })
             .catch(error => {
                 console.log('Error', error.message);
@@ -198,7 +205,7 @@ const ConferenceDetail: React.FC = () => {
                 // 更新关注列表
                 if (isFollowed) {
                     // 如果之前已经关注了，现在是取消关注
-                    setFollowConferences(prev => prev.filter(c => c.conferenceId !==  id));
+                    setFollowConferences(prev => prev.filter(c => c.conferenceId !== id));
                 } else {
                     // 如果之前没有关注，现在是添加关注
                     // 将thisConference加入列表
@@ -312,14 +319,15 @@ const ConferenceDetail: React.FC = () => {
 
                 <div className="detail-card">
                     <h2>{conferenceDetail.fullTitle}</h2>
-                    <p>💡会议主页：<a href="https://cikm2024.org/" target="_blank">https://cikm2024.org/</a></p>
-                    <p>⏱️摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)} </p>
-                    <p>⏱️全文截稿日期: {formatDate(conferenceDetail.paperDeadline)} </p>
-                    <p>📅会议开始日期: {formatDate(conferenceDetail.startTime)} </p>
-                    <p>🎯届数: {conferenceDetail.sessionNum} </p>
-                    <p> 🏆CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>{conferenceDetail.ccfRank}</span> {" "}
-                        🌟关注: {conferenceDetail.followNum} {"  "}
-                        ✈️参加: {conferenceDetail.attendNum}</p>
+                    <p>💡 会议主页：<a href={conferenceDetail.mainpageLink} target="_blank">{conferenceDetail.mainpageLink}</a></p>
+                    <p>⏱️ 摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)} </p>
+                    <p>⏱️ 全文截稿日期: {formatDate(conferenceDetail.paperDeadline)} </p>
+                    <p>📅 会议开始日期: {formatDate(conferenceDetail.startTime)} </p>
+                    <p>📆 会议结束日期: {formatDate(conferenceDetail.startTime)} </p>
+                    <p>🎯 届数: {conferenceDetail.sessionNum} </p>
+                    <p> 🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>{conferenceDetail.ccfRank}</span> {" "}
+                        🌟 关注: {conferenceDetail.followNum} {"  "}
+                        ✈️ 参加: {conferenceDetail.attendNum}</p>
                 </div>
 
                 <div className="call">
@@ -362,12 +370,17 @@ const ConferenceDetail: React.FC = () => {
                 <div className="follow-card">
                     <div className="star-btn">
                         <span>🌟</span>
-                        <text>收藏列表</text>
+                        <text>会议收藏列表</text>
                     </div>
-
-                    <div className="follow-list">
-                        <Table columns={followConferenceCols} dataSource={followConferences}
-                            style={{ margin: 16 }} pagination={paginationProps} />
+                    <div>
+                        {followConferences.length > 0 ? (
+                            <div className="follow-list">
+                                <Table columns={followConferenceCols} dataSource={followConferences}
+                                    style={{ margin: 16 }} pagination={paginationProps} />
+                            </div>
+                        ) : (
+                            <p style={{ textAlign: "center", marginTop: "20px" }}>您还没有关注任何会议。</p> // 显示当列表为空时的消息
+                        )}
                     </div>
                 </div>
 

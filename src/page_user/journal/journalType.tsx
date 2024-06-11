@@ -8,4 +8,15 @@ export type Journal = {
     publisher: string; //出版社
 }
 
-export default Journal
+export type DetailJournal = {
+    journalId: string;
+    ccfRank: string;
+    sub: string;
+    dblpLink: string;
+    mainpageLink: string;
+    followNum: number;
+    impactFactor: number; //影响因子
+    citeScore: number; //引用分数
+    publisher: string; //出版社
+    topicDetails: string;
+}

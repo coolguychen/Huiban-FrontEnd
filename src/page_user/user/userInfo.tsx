@@ -104,8 +104,54 @@ const UserInfo: React.FC = () => {
             });
     };
 
-    const handleDelete = (record) => {
-        
+    //删除参加的会议
+    const handleDeleteAttend = (record) => {
+        // 在这里调用删除接口
+        console.log('删除关注的会议：' + record);
+        const id = record.conferenceId
+        const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}/attend/sub`; // 取消关注接口
+        axios.put(apiUrl, {
+            email: email
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log('取消参加成功', response);
+                setDeleteModalVisible(false); // 关闭模态框
+                // 更新关注列表，移除已取消关注的会议
+                setAttendConferences(attendConferences.filter(conference => conference.conferenceId !== id));
+            })
+            .catch(error => {
+                console.error('取消参加失败:', error);
+                // 可以显示错误消息提示用户操作失败
+            });
+    };
+    const handleDeleteFollowJournal = (record) => {
+        // 在这里调用删除接口
+        console.log('删除关注的期刊：' + record);
+        const id = record.journalId
+        const apiUrl = `http://124.220.14.106:9001/api/journals/${id}/follow/sub`; // 取消关注接口
+        axios.put(apiUrl, {
+            email: email
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log('取消关注成功', response);
+                setDeleteModalVisible(false); // 关闭模态框
+                // 更新关注列表，移除已取消关注的期刊
+                setStarJournals(starJournals.filter(journal => journal.journalId !== id));
+            })
+            .catch(error => {
+                console.error('取消关注失败:', error);
+                // 可以显示错误消息提示用户操作失败
+            });
     }
 
     // 表格单页时隐藏分页器
@@ -113,7 +159,149 @@ const UserInfo: React.FC = () => {
         hideOnSinglePage: true
     }
 
-    const conferenceCols = [
+    const followConferenceCols = [
+        {
+            title: '📙简称',
+            dataIndex: 'conferenceId',
+            key: 'conferenceId',
+            align: 'center',
+            render: (text, record) => (
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
+                    {text}
+                </Link>
+            ),
+        },
+        {
+            title: '📖全称',
+            dataIndex: 'fullTitle',
+            key: 'fullTitle',
+            align: 'center',
+            render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
+        },
+        {
+            title: '🏷️类型',
+            dataIndex: 'sub',
+            key: 'sub',
+            align: 'center',
+
+        },
+        {
+            title: '🏆CCF',
+            dataIndex: 'ccfRank',
+            key: 'ccfRank',
+            align: 'center',
+            // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
+            render: (ccfRank) => {
+                if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
+                let backgroundColor;
+                switch (ccfRank) {
+                    case 'A':
+                        backgroundColor = 'pink';
+                        break;
+                    case 'B':
+                        backgroundColor = 'gold';
+                        break;
+                    case 'C':
+                        backgroundColor = 'honeydew';
+                        break;
+                    default:
+                        backgroundColor = 'grey';
+                        ccfRank = 'N'
+                }
+                return (
+                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                );
+            },
+
+            filters: [
+                {
+                    text: 'A',
+                    value: 'A',
+                },
+                {
+                    text: 'B',
+                    value: 'B',
+                },
+                {
+                    text: 'C',
+                    value: 'C',
+                },
+            ],
+            onFilter: (value, record) => record.ccfRank === value,
+        },
+        {
+            title: '❓延期',
+            dataIndex: 'isPostponed',
+            key: 'isPostponed',
+            align: 'center',
+            render: (isPostponed) => {
+                if (isPostponed) { // 如果延期
+                    return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
+                }
+            }
+        },
+        {
+            title: '⏰摘要截止',
+            dataIndex: 'abstractDeadline',
+            key: 'abstractDeadline',
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        },
+        {
+            title: '🔔全文截止',
+            dataIndex: 'paperDeadline',
+            key: 'paperDeadline',
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        },
+        {
+            title: '📅开始时间',
+            dataIndex: 'startTime',
+            key: 'startTime',
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        },
+        {
+            title: '📆结束时间',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        },
+        {
+            title: '📍地点',
+            dataIndex: 'place',
+            key: 'place',
+            align: 'center',
+            render: place => <span>{place}</span>,
+        },
+        // {
+        //     title: '🔖接受率',
+        //     dataIndex: 'acceptedRate',
+        //     key: 'acceptedRate',
+        //     align: 'center',
+        //     render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
+        // },
+        {
+            title: '操作',
+            key: 'action',
+            render: (text, record) => (
+                <Space>
+                    <Popconfirm
+                        title="确定要删除吗？"
+                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteFollow(record) }} // 确定则调用删除的接口
+                        okText="确认"
+                        cancelText="取消"
+                    >
+                        <DeleteOutlined style={{ color: 'red' }} />
+                    </Popconfirm>
+                </Space>
+            ),
+        },
+    ];
+
+
+    const attendConferenceCols = [
         {
             title: '📙简称',
             dataIndex: 'conferenceId',
@@ -197,14 +385,14 @@ const UserInfo: React.FC = () => {
             }
         },
         {
-            title: '⏰摘要截止日期',
+            title: '⏰摘要截止',
             dataIndex: 'abstractDeadline',
             key: 'abstractDeadline',
             align: 'center',
             render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
-            title: '🔔全文截止日期',
+            title: '🔔全文截止',
             dataIndex: 'paperDeadline',
             key: 'paperDeadline',
             align: 'center',
@@ -232,20 +420,13 @@ const UserInfo: React.FC = () => {
             render: place => <span>{place}</span>,
         },
         {
-            title: '🔖接受率',
-            dataIndex: 'acceptedRate',
-            key: 'acceptedRate',
-            align: 'center',
-            render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
-        },
-        {
             title: '操作',
             key: 'action',
             render: (text, record) => (
                 <Space>
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteFollow(record) }} // 确定则调用删除的接口
+                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteAttend(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -255,9 +436,8 @@ const UserInfo: React.FC = () => {
             ),
         },
     ];
-
     // 定义列
-    const journalCols = [
+    const followJournalCols = [
         {
             title: '📜期刊',
             dataIndex: 'journalId',
@@ -342,7 +522,7 @@ const UserInfo: React.FC = () => {
                 <Space>
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setDeleteModalVisible(true); handleDelete(record) }} // 确定则调用删除的接口
+                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteFollowJournal(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -428,7 +608,7 @@ const UserInfo: React.FC = () => {
                 <div className="follow-conference">
                     <h3 className="info">⭐ 收藏的会议</h3>
                     <div className="follow-list">
-                        <Table columns={conferenceCols} dataSource={starConferences}
+                        <Table columns={followConferenceCols} dataSource={starConferences}
                             style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
@@ -436,7 +616,7 @@ const UserInfo: React.FC = () => {
                 <div className="attend-conference">
                     <h3 className="info">🧑‍💻 参加的会议</h3>
                     <div className="attend-list">
-                        <Table columns={conferenceCols} dataSource={attendConferences}
+                        <Table columns={attendConferenceCols} dataSource={attendConferences}
                             style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
@@ -444,7 +624,7 @@ const UserInfo: React.FC = () => {
                 <div className="follow-journal">
                     <h3 className="info">🧡 收藏的期刊</h3>
                     <div className="follow-list">
-                        <Table columns={journalCols} dataSource={starJournals}
+                        <Table columns={followJournalCols} dataSource={starJournals}
                             style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
