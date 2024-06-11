@@ -33,7 +33,7 @@ const PopularJournals: React.FC = () => {
                 let journalTmp: popJournal[] = [];
                 for (let i = 0; i < records.length; i++) {
                     journalTmp.push({
-                        journalId: records[i].conferenceId,
+                        journalId: records[i].journalId,
                         followNum: records[i].followNum,
                     });
                 }

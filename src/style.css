@@ -146,6 +146,34 @@ body {
   color: #a588c0 !important;
 }
 
+
+/* --------- */
+/* AntD Card */
+/* --------- */
+
+.custom-card {
+  margin-top: 16px;
+  background-color: rgba(249, 249, 249, 0.5);
+  border-radius: 8px; /* 圆角 */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 阴影 */
+}
+
+.custom-card a {
+  color: #1890ff; /* 蓝色链接 */
+}
+
+.card-title {
+  font-size: 16px; /* 设置标题的字体大小 */
+  color: #34568B; /* 设置标题的颜色 */
+  font-weight: bold; /* 字体加粗 */
+}
+
+.card-description {
+  font-size: 14px; /* 设置描述的字体大小 */
+  color: #7B7D7D; /* 设置描述的颜色 */
+  margin-top: 4px; /* 上边距 */
+}
+
 /*注册*/
 .register {
   display: flex;
@@ -314,6 +342,9 @@ body {
 /* 右侧样式 */
 .right-sidebar {
   flex: 1;
+  display: flex;       /* 启用 flex 布局 */
+  flex-direction: column; /* 垂直堆叠子元素 */
+  
   /* 右侧占据 1/4 空间 */
   /* background-color: lightcoral; */
 }
@@ -372,6 +403,7 @@ body {
   margin: 5px 2px 5px 2px;
   color: gray;
   font-size: 12px;
+  font-weight: 400;
   justify-content: left;
   line-height: 2.0;
   /* 设置行间距为 1.5倍字体大小，可以根据需要调整 */
@@ -607,11 +639,15 @@ body {
   font-weight: 600;
 }
 
-/*个人信息页右侧*/
+/*科研直链*/
 .tools-card {
   background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
   background-blend-mode: screen;
   border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中子元素 */
+  justify-content: center; /* 垂直居中子元素 */
   padding: 15px;
   margin: 10px;
   /* 添加阴影效果 */

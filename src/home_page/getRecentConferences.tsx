@@ -77,13 +77,12 @@ const RecentConferences: React.FC = () => {
             align: 'center',
             render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
         },
-        {
-            title: '🏷️类型',
-            dataIndex: 'sub',
-            key: 'sub',
-            align: 'center',
-
-        },
+        // {
+        //     title: '🏷️类型',
+        //     dataIndex: 'sub',
+        //     key: 'sub',
+        //     align: 'center',
+        // },
         {
             title: '🏆CCF',
             dataIndex: 'ccfRank',
@@ -114,26 +113,26 @@ const RecentConferences: React.FC = () => {
                 );
             },
         },
+        // {
+        //     title: '❓延期',
+        //     dataIndex: 'isPostponed',
+        //     key: 'isPostponed',
+        //     align: 'center',
+        //     render: (isPostponed) => {
+        //         if (isPostponed) { // 如果延期
+        //             return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
+        //         }
+        //     }
+        // },
         {
-            title: '❓延期',
-            dataIndex: 'isPostponed',
-            key: 'isPostponed',
-            align: 'center',
-            render: (isPostponed) => {
-                if (isPostponed) { // 如果延期
-                    return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
-                }
-            }
-        },
-        {
-            title: '⏰摘要截止日期',
+            title: '⏰摘要截止',
             dataIndex: 'abstractDeadline',
             key: 'abstractDeadline',
             align: 'center',
             render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
-            title: '🔔全文截止日期',
+            title: '🔔全文截止',
             dataIndex: 'paperDeadline',
             key: 'paperDeadline',
             align: 'center',
@@ -160,13 +159,13 @@ const RecentConferences: React.FC = () => {
             align: 'center',
             render: place => <span>{place}</span>,
         },
-        {
-            title: '🔖接受率',
-            dataIndex: 'acceptedRate',
-            key: 'acceptedRate',
-            align: 'center',
-            render: acceptedRate => <span>{acceptedRate * 100 + '%'}</span>
-        }
+        // {
+        //     title: '🔖接受率',
+        //     dataIndex: 'acceptedRate',
+        //     key: 'acceptedRate',
+        //     align: 'center',
+        //     render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
+        // }
     ];
 
 

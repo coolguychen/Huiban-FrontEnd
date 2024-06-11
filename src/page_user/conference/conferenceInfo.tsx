@@ -191,7 +191,6 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'sub',
             key: 'sub',
             align: 'center',
-
         },
         {
             title: '🏆CCF',
@@ -290,7 +289,7 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'acceptedRate',
             key: 'acceptedRate',
             align: 'center',
-            render: acceptedRate => <span>{acceptedRate * 100 + '%'}</span>
+            render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
         }
     ];
 

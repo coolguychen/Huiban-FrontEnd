@@ -1,8 +1,14 @@
 // 展示会议详情
-import { Button, List } from "antd";
+import { Button, List, Modal, Table } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SingleComment from "./commentType.tsx";
+import { useSelector } from "react-redux";
+import { Conference, DetailConference } from "./conferenceType.tsx";
+import axios from "axios";
+import { useParams } from "react-router";
+import moment from "moment";
+import { Link } from "react-router-dom";
 
 
 const comments = [
@@ -51,27 +57,269 @@ const comments = [
     },
 ];
 
+type StarConference  = {
+    conferenceId: string,
+    ccfRank: string
+}
+
 const ConferenceDetail: React.FC = () => {
+    const { id } = useParams(); // 获取路由参数
+    console.log(id)
+    const userLogin = useSelector((state: any) => state.userLogin)
+    console.log(userLogin)
+    const token = userLogin.userInfo.data.token;
+    const email = userLogin.userInfo.data.email;
+    const [conferenceDetail, setConferenceDetail] = useState<DetailConference>({
+        conferenceId: "",
+        fullTitle: "",
+        ccfRank: "",
+        dblpLink: "",
+        mainpageLink: "",
+        abstractDeadline: "",
+        paperDeadline: "",
+        startTime: "",
+        endTime: "",
+        followNum: 0,
+        attendNum: 0,
+        sessionNum: 0,
+        topicDetails: ""
+    });
+
+    const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
+    const [isAttended, setIsAttended] = useState(false); // 初始状态设为未参加
+    const [followConferences, setFollowConferences] = useState<StarConference[]>([]);
+    
+    // 表示本页的会议
+    const [thisConference, setThisConference] = useState<StarConference>({conferenceId: "", ccfRank: ""});
+
+    useEffect(() => {
+        // 获取会议详情
+        axios.get('http://124.220.14.106:9001/api/conferences/list/' + id + '/detail', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                let records = data.data;
+                console.log(records)
+                let conferenceTmp: DetailConference = {
+                    conferenceId: records.conferenceId,
+                    fullTitle: records.fullTitle,
+                    ccfRank: records.ccfRank,
+                    dblpLink: records.dblpLink,
+                    mainpageLink: records.mainpageLink,
+                    abstractDeadline: records.abstractDeadline, //摘要DDL
+                    paperDeadline: records.paperDeadline,//全文DDL
+                    startTime: records.startTime, //开始时间'
+                    endTime: records.endTime,  //结束时间
+                    followNum: records.followNum,
+                    attendNum: records.attendNum,
+                    sessionNum: records.sessionNum,
+                    topicDetails: records.topicDetails
+                };
+                setConferenceDetail(conferenceTmp);
+                setThisConference({
+                    conferenceId: records.conferenceId,
+                    ccfRank: records.ccfRank
+                });                
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+
+        getStarList()
+
+    }, []);
+
+    const getStarList = () => {
+        // 获取用户收藏列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                console.log(data.data);
+                let records = data.data;
+                console.log(records)
+                let followConferences: Conference[] = records.followConferences
+                let attendConferences: Conference[] = records.attendConferences
+                setFollowConferences(followConferences)
+                // 判断是否已经收藏/参加了该会议
+                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
+                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
+                setIsFollowed(conferenceInFollowList);
+                console.log(isFollowed)
+                setIsAttended(conferenceInAttendList);
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }
+
     const submitComment = (value: string) => {
         // 处理提交评论的逻辑
         console.log(value);
     };
+
+    const formatDate = (date: string) => {
+        return moment(new Date(date)).format('YYYY-MM-DD')
+    };
+
+
+    const addToFollowList = () => {
+        const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}/follow/${isFollowed ? 'sub' : 'add'}`;
+        axios.put(apiUrl, {
+            email: email
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            }
+        }).then(response => {
+            console.log(response);
+            let data = response.data;
+            if (data.code === 200) {
+                // 更新关注状态
+                setIsFollowed(!isFollowed);
+                // 显示相应的消息
+                Modal.success({
+                    title: isFollowed ? '取消关注成功' : '关注成功',
+                    content: isFollowed ? '您已成功取消关注。' : '您已成功关注！',
+                });
+                // 更新关注列表
+                if (isFollowed) {
+                    // 如果之前已经关注了，现在是取消关注
+                    setFollowConferences(prev => prev.filter(c => c.conferenceId !==  id));
+                } else {
+                    // 如果之前没有关注，现在是添加关注
+                    // 将thisConference加入列表
+                    setFollowConferences(prev => [...prev, thisConference]);
+                }
+            } else {
+                Modal.error({
+                    title: '操作失败',
+                    content: '操作未能成功，请稍后重试。',
+                });
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            Modal.error({
+                title: '操作失败',
+                content: '网络或服务器错误，请检查您的连接后再试。',
+            });
+        });
+    }
+
+
+    const addToAttendList = () => {
+        const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}/attend/${isAttended ? 'sub' : 'add'}`;
+        axios.put(apiUrl, {
+            email: email
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            }
+        }).then(response => {
+            console.log(response);
+            let data = response.data;
+            console.log(data);
+
+            if (data.code === 200) {
+                // 更新关注状态
+                setIsAttended(!isAttended);
+                // 显示相应的消息
+                Modal.success({
+                    title: isAttended ? '取消参加成功' : '参加成功',
+                    content: isAttended ? '您已成功取消参加。' : '您已成功参加！',
+                });
+            } else {
+                // 如果失败
+                Modal.error({
+                    title: '参加失败',
+                    content: '参加操作未能成功，请稍后重试。',
+                });
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            Modal.error({
+                title: '关注失败',
+                content: '网络或服务器错误，请检查您的连接后再试。',
+            });
+        });
+    }
+
+    // 表格单页时隐藏分页器
+    const paginationProps = {
+        hideOnSinglePage: true
+    }
+
+    const followConferenceCols = [
+        {
+            title: '📙简称',
+            dataIndex: 'conferenceId',
+            key: 'conferenceId',
+            align: 'center',
+            render: (text, record) => (
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
+                    {text}
+                </Link>
+            ),
+        },
+        {
+            title: '🏆CCF',
+            dataIndex: 'ccfRank',
+            key: 'ccfRank',
+            align: 'center',
+            // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
+            render: (ccfRank) => {
+                if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
+
+                let backgroundColor;
+                switch (ccfRank) {
+                    case 'A':
+                        backgroundColor = 'pink';
+                        break;
+                    case 'B':
+                        backgroundColor = 'gold';
+                        break;
+                    case 'C':
+                        backgroundColor = 'honeydew';
+                        break;
+                    default:
+                        backgroundColor = 'grey';
+                        ccfRank = 'N'
+                }
+                return (
+                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                );
+            },
+        },
+    ];
 
     return (
         <div className="flex-container">
             <div className="left-sidebar">
 
                 <div className="detail-card">
-                    <h2>CIKM 2024: ACM International Conference on Information and Knowledge Management</h2>
-                    💡<a href="https://cikm2024.org/" target="_blank">https://cikm2024.org/</a>
-                    <p> 截稿日期: 2024-05-13 </p>
-                    <p> 通知日期: 2024-07-16 </p>
-                    <p> 会议日期: 2024-10-21 </p>
-                    <p> 会议地点: Boise, Idaho, USA  </p>
-                    <p> 届数:33 </p>
-                    <p> CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>b</span> {"  "}
-                        关注: 473  {"  "}
-                        参加: 84</p>
+                    <h2>{conferenceDetail.fullTitle}</h2>
+                    <p>💡会议主页：<a href="https://cikm2024.org/" target="_blank">https://cikm2024.org/</a></p>
+                    <p>⏱️摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)} </p>
+                    <p>⏱️全文截稿日期: {formatDate(conferenceDetail.paperDeadline)} </p>
+                    <p>📅会议开始日期: {formatDate(conferenceDetail.startTime)} </p>
+                    <p>🎯届数: {conferenceDetail.sessionNum} </p>
+                    <p> 🏆CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>{conferenceDetail.ccfRank}</span> {" "}
+                        🌟关注: {conferenceDetail.followNum} {"  "}
+                        ✈️参加: {conferenceDetail.attendNum}</p>
                 </div>
 
                 <div className="call">
@@ -80,15 +328,7 @@ const ConferenceDetail: React.FC = () => {
 
                 <div className="overview-card">
                     <text>
-                        The 22nd Theory of Cryptography Conference 2024 will be held in Milan, Italy on December 2-6, 2024. TCC 2024 is organized by the International Association for Cryptologic Research (IACR). Papers presenting original research on foundational and theoretical aspects of cryptography are sought. For more information about TCC, see the TCC manifesto.
-                        Submissions will open soon
-                        The Theory of Cryptography Conference deals with the paradigms, approaches, and techniques used to conceptualize natural cryptographic problems and provide algorithmic solutions to them. More specifically, the scope of the conference includes, but is not limited to the:
-                        study of known paradigms, approaches, and techniques, directed towards their better understanding and utilization
-                        discovery of new paradigms, approaches and techniques that overcome limitations of the existing ones
-                        formulation and treatment of new cryptographic problems
-                        study of notions of security and relations among them
-                        modeling and analysis of cryptographic algorithms
-                        study of the complexity assumptions used in cryptography
+                        {conferenceDetail.topicDetails}
                     </text>
                 </div>
                 <div className="comment">
@@ -107,18 +347,16 @@ const ConferenceDetail: React.FC = () => {
                         提交
                     </Button>
                 </div>
-
             </div>
             <div className="right-sidebar">
-
                 <div className="personal-card">
-                    <div className="follow-btn">
-                        <span>➕</span>
-                        <text>我要关注</text>
+                    <div className="follow-btn" onClick={addToFollowList}>
+                        <span>{isFollowed ? '➖' : '➕'}</span>
+                        <text>{isFollowed ? '取消关注' : '我要关注'}</text>
                     </div>
-                    <div className="participate-btn">
-                        <span>✈️</span>
-                        <text>我要参加</text>
+                    <div className="participate-btn" onClick={addToAttendList}>
+                        <span>{isAttended ? '✖️' : '✈️'}</span>
+                        <text>{isAttended ? '取消参加' : '我要参加'}</text>
                     </div>
                 </div>
                 <div className="follow-card">
@@ -128,7 +366,8 @@ const ConferenceDetail: React.FC = () => {
                     </div>
 
                     <div className="follow-list">
-                        以下是收藏的表格
+                        <Table columns={followConferenceCols} dataSource={followConferences}
+                            style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
 

@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../reducer/action";
 import axios from "axios";
 import moment from "moment";
+import { tools } from "../../home_page/scienceTools.tsx";
+import ResearchToolCard from "../../home_page/researchToolCard.tsx";
 
 
 const UserInfo: React.FC = () => {
@@ -23,10 +25,13 @@ const UserInfo: React.FC = () => {
         followJournals: [],
         attendConferences: []
     });
-    
+
     //记录收藏会议列表
     const [starConferences, setStarConferences] = useState<Conference[]>([]);
     const [starJournals, setStarJournals] = useState<Journal[]>([]);
+
+    //记录参加的会议列表
+    const [attendConferences, setAttendConferences] = useState<Conference[]>([]);
 
     const userLogin = useSelector((state: any) => state.userLogin)
     const email = userLogin.userInfo.data.username;
@@ -34,7 +39,7 @@ const UserInfo: React.FC = () => {
     console.log(email, token)
     // 获取用户信息
     useEffect(() => {
-        axios.get('http://124.220.14.106:9001/api/users/info/' + email, {
+        axios.get('http://124.220.14.106:9001/api/users/info', {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
                 'Authorization': "Bearer " + token
@@ -57,7 +62,11 @@ const UserInfo: React.FC = () => {
                     attendConferences: records.attendConferences
                 };
                 setUserData(userDataTmp);
-                console.log(userDataTmp)
+
+                // 过滤掉 null 和 undefined，然后设置状态
+                setStarConferences(userDataTmp.followConferences.filter(item => item != null));
+                setStarJournals(userDataTmp.followJournals.filter(item => item != null));
+                setAttendConferences(userDataTmp.attendConferences.filter(item => item != null));
             })
             .catch(error => {
                 console.log('Error', error.message);
@@ -66,14 +75,38 @@ const UserInfo: React.FC = () => {
 
 
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [recordToDelete, setRecordToDelete] = useState(null);
     const dispatch = useDispatch();
 
-    const handleDelete = () => {
+
+    //删除关注的会议
+    const handleDeleteFollow = (record) => {
         // 在这里调用删除接口
-        console.log('调用删除接口');
-        setDeleteModalVisible(false);
+        console.log('删除关注的会议：' + record);
+        const id = record.conferenceId
+        const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}/follow/sub`; // 取消关注接口
+        axios.put(apiUrl, {
+            email: email
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log('取消关注成功', response);
+                setDeleteModalVisible(false); // 关闭模态框
+                // 更新关注列表，移除已取消关注的会议
+                setStarConferences(starConferences.filter(conference => conference.conferenceId !== id));
+            })
+            .catch(error => {
+                console.error('取消关注失败:', error);
+                // 可以显示错误消息提示用户操作失败
+            });
     };
+
+    const handleDelete = (record) => {
+        
+    }
 
     // 表格单页时隐藏分页器
     const paginationProps = {
@@ -203,7 +236,7 @@ const UserInfo: React.FC = () => {
             dataIndex: 'acceptedRate',
             key: 'acceptedRate',
             align: 'center',
-            render: acceptedRate => <span>{acceptedRate * 100 + '%'}</span>
+            render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
         },
         {
             title: '操作',
@@ -212,7 +245,7 @@ const UserInfo: React.FC = () => {
                 <Space>
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteFollow(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -231,6 +264,13 @@ const UserInfo: React.FC = () => {
             key: 'journalId',
             align: 'center',
             render: (text, record) => <Link to={`/journalDetail/${record.journalId}`}>{text}</Link>,//点击全称 跳转到期刊详情页
+        },
+        {
+            title: '🏷️类型',
+            dataIndex: 'sub',
+            key: 'sub',
+            align: 'center',
+
         },
         {
             title: '🏆CCF',
@@ -284,6 +324,12 @@ const UserInfo: React.FC = () => {
             align: 'center'
         },
         {
+            title: '🪄引用分数',
+            dataIndex: 'citeScore',
+            key: 'citeScore',
+            align: 'center'
+        },
+        {
             title: '📚出版社',
             dataIndex: 'publisher',
             key: 'publisher',
@@ -296,7 +342,7 @@ const UserInfo: React.FC = () => {
                 <Space>
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        onConfirm={() => { setDeleteModalVisible(true); handleDelete(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -307,6 +353,7 @@ const UserInfo: React.FC = () => {
         },
     ];
 
+
     const [editing, setEditing] = useState(false);
     const [editedUser, setEditedUser] = useState({ userName: userData.userName, email: userData.email, institution: userData.institution });
 
@@ -315,6 +362,11 @@ const UserInfo: React.FC = () => {
     };
 
     const handleSave = () => {
+        // 这里可以添加保存逻辑，比如提交表单等操作
+        setEditing(false);
+    };
+
+    const handleCancel = () => {
         // 这里可以添加保存逻辑，比如提交表单等操作
         setEditing(false);
     };
@@ -356,7 +408,10 @@ const UserInfo: React.FC = () => {
                                 <Input type="text" name="institution" value={editedUser.institution}
                                     onChange={handleChange} placeholder="科研机构" />
                             </div>
-                            <Button type="primary" onClick={handleSave}>保存</Button>
+                            <div style={{ width: "200px", display: 'flex', justifyContent: 'space-between', margin: "10px" }}>
+                                <Button type="primary" ghost onClick={handleCancel}>取消</Button>
+                                <Button type="primary" onClick={handleSave}>保存</Button>
+                            </div>
                         </div>
                     ) : (
                         <div>
@@ -381,7 +436,7 @@ const UserInfo: React.FC = () => {
                 <div className="attend-conference">
                     <h3 className="info">🧑‍💻 参加的会议</h3>
                     <div className="attend-list">
-                        <Table columns={conferenceCols} dataSource={starConferences}
+                        <Table columns={conferenceCols} dataSource={attendConferences}
                             style={{ margin: 16 }} pagination={paginationProps} />
                     </div>
                 </div>
@@ -403,9 +458,10 @@ const UserInfo: React.FC = () => {
 
             <div className="right-sidebar">
                 <div className="tools-card">
-                    待开发（一些初步的想法）：
-                    一些科研工具推荐？用户点击可以直接跳转？
-                    根据用户的关注和收藏，推荐会议和期刊的算法？
+                    <text style={{fontWeight: "bold"}}>🧑‍🎓💡  科研直链</text>
+                    {tools.map(tool => (
+                        <ResearchToolCard key={tool.name} name={tool.name} url={tool.url} description={tool.description} />
+                    ))}
                 </div>
 
             </div>

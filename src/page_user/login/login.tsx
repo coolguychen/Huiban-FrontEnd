@@ -9,7 +9,6 @@ import { login, registerout } from '../../reducer/action';
 
 const Login: React.FC = () => {
     
-    const [username,setUsername] = useState<string>('');
     const [email,setEmail] = useState<string>('');
     const [password,setPassword] = useState<string>('');
     const [formData, setFormData] = useState({

@@ -37,10 +37,11 @@ const JournalInfo: React.FC = () => {
                 let journalTmp: Journal[] = [];
                 for (let i = 0; i < records.length; i++) {
                     journalTmp.push({
-                        journalId: records[i].conferenceId,
+                        journalId: records[i].journalId,
                         ccfRank: records[i].ccfRank,
                         sub: records[i].sub,
                         publisher: records[i].publisher,
+                        citeScore: records[i].citeScore,
                         impactFactor: records[i].impactFactor
                     });
                 }
@@ -168,6 +169,13 @@ const JournalInfo: React.FC = () => {
             render: (text, record) => <Link to={`/journalDetail/${record.journalId}`}>{text}</Link>,//点击全称 跳转到期刊详情页
         },
         {
+            title: '🏷️类型',
+            dataIndex: 'sub',
+            key: 'sub',
+            align: 'center',
+
+        },
+        {
             title: '🏆CCF',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
@@ -212,17 +220,16 @@ const JournalInfo: React.FC = () => {
             ],
             onFilter: (value, record) => record.ccfRank === value,
         },
-        // {
-        //     title: '⏰截稿时间',
-        //     dataIndex: 'paperDeadline',
-        //     key: 'paperDeadline',
-        //     align: 'center',
-        //     render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
-        // },
         {
             title: '🎯影响因子',
             dataIndex: 'impactFactor',
             key: 'impactFactor',
+            align: 'center'
+        },
+        {
+            title: '🪄引用分数',
+            dataIndex: 'citeScore',
+            key: 'citeScore',
             align: 'center'
         },
         {

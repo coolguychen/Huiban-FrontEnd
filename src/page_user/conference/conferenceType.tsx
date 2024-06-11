@@ -14,3 +14,20 @@ export type Conference = {
     acceptedRate: number; //接受率
     isPostponed: boolean; // 是否延期
 }
+
+
+export type DetailConference = {
+    conferenceId: string;
+    fullTitle: string;
+    ccfRank: string;
+    dblpLink: string;
+    mainpageLink: string;
+    abstractDeadline: string; //摘要DDL
+    paperDeadline: string; //全文DDL
+    startTime: string; //开始时间'
+    endTime: string; //结束时间
+    followNum: number;
+    sessionNum: number;
+    attendNum: number;
+    topicDetails: string;
+}
