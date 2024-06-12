@@ -42,12 +42,13 @@ export const logout = () => (dispatch) => {
     const response = axios.get('http://124.220.14.106:9001/auth/logout')
     console.log("退出登录")
     localStorage.removeItem('userInfo')
+    localStorage.removeItem('userRegisterInfo')
     dispatch({ type: 'USER_LOGIN_OUT' })
     
 }
 
 // 注册的函数
-export const register = (usename, email, password) => async (dispatch) => {
+export const register = (userName, email, password) => async (dispatch) => {
     try {
         dispatch({
             type: 'USER_REGISTER_REQUEST'
@@ -62,17 +63,29 @@ export const register = (usename, email, password) => async (dispatch) => {
         // 注册
         const { data } = await axios.post(
             'http://124.220.14.106:9001/auth/register', // 调用注册的api
-            { usename, email, password },
+            { userName, email, password },
             config
         )
 
-        dispatch({
-            type: 'USER_REGISTER_SUCCESS',
-            payload: data,
-        })
-        localStorage.setItem('userRegisterInfo', JSON.stringify(data))
+        console.log(data)
+        if (data.code === 200) {
+            dispatch({
+                type: 'USER_REGISTER_SUCCESS',
+                payload: data,
+            })
+            localStorage.setItem('userRegisterInfo', JSON.stringify(data))
+        } 
+        if (data.code === 405) {
+            dispatch({
+                type: 'USER_REGISTER_FAIL',
+                payload: data
+            })
+            localStorage.setItem('userRegisterInfo', JSON.stringify(data))
+        }
+        
     } catch (error) {
         // 注册失败！
+        console.log(error)
         dispatch({
             type: 'USER_REGISTER_FAIL',
             payload:
@@ -80,5 +93,11 @@ export const register = (usename, email, password) => async (dispatch) => {
                     ? error.response.data.message
                     : error.message
         })
+        
     }
+}
+
+export const registerout = () => (dispatch) => {
+    localStorage.removeItem('userRegisterInfo')
+    dispatch({ type: 'USER_REGISTER_OUT' })
 }
