@@ -1,37 +1,64 @@
-import React, { useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { Conference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
-import { Button, Col, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Row, Select, Space, Table } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Table } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-
-
-
-
-const conferences: Conference[] = [
-    {
-        conferenceId: "CIKM2024",
-        title: "CIKM",
-        fullTitle: "ACM International Conference on Information and Knowledge Management 2024",
-        ccfRank: "B",
-        sub: "数据库/数据挖掘/内容检索",
-        year: 2024,
-        dblpLink: "", // 填入对应链接
-        mainpageLink: "https://cikm2024.org/",
-        place: "Boise, Idaho, USA",
-        abstractDeadline: new Date("2024-05-13"),
-        paperDeadline: new Date("2024-07-16"),
-        startTime: new Date("2024-10-21"),
-        endTime: new Date("2024-11-21"),
-        acceptedRate: 0.22, // 添加接受率
-        isPostponed: false
-    },
-];
+import moment from "moment";
+import { SearchOutlined } from '@ant-design/icons';
+import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
+import Highlighter from 'react-highlight-words';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 const { TextArea } = Input;
 const { Option } = Select;
-
+type DataIndex = keyof Conference;
 
 const ConferenceManage: React.FC = () => {
+    /** 管理员信息 */
+    const userLogin = useSelector((state: any) => state.userLogin)
+    console.log(userLogin)
+    const token = userLogin.userInfo.data.token;
+    const [conferences, setConferences] = useState<Conference[]>([]);
+
+    /**获取全部会议 */
+    useEffect(() => {
+        axios.get('http://124.220.14.106:9001/api/conferences/list', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                let records = data.data;
+                console.log(records)
+                let conferenceTmp: Conference[] = [];
+                for (let i = 0; i < records.length; i++) {
+                    conferenceTmp.push({
+                        conferenceId: records[i].conferenceId,
+                        fullTitle: records[i].fullTitle,
+                        ccfRank: records[i].ccfRank,
+                        sub: records[i].sub,
+                        mainpageLink: records[i].mainpageLink,
+                        abstractDeadline: records[i].abstractDeadline, //摘要DDL
+                        paperDeadline: records[i].paperDeadline,//全文DDL
+                        startTime: records[i].startTime, //开始时间'
+                        endTime: records[i].endTime,  //结束时间
+                        acceptedRate: records[i].acceptedRate, //接受率
+                        place: records[i].place,
+                        isPostponed: records[i].isPostponed// 是否延期
+                    });
+                }
+                setConferences(conferenceTmp);
+                console.log(conferenceTmp)
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }, []);
 
     //分页默认值，记得import useState
     const [pageOption, setPageOption] = useState({
@@ -55,13 +82,41 @@ const ConferenceManage: React.FC = () => {
         })
     }
 
+    /**编辑与删除操作 */
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [recordToDelete, setRecordToDelete] = useState(null);
 
-    const handleDelete = () => {
+    /**删除会议 */
+    const handleDeleteConference = (record) => {
         // 在这里调用删除接口
         console.log('调用删除接口');
         setDeleteModalVisible(false);
+        console.log('删除关注的会议：' + record);
+        const id = record.conferenceId
+        const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}`; // 删除接口
+        axios.delete(apiUrl, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log('删除会议成功', response);
+                Modal.success({
+                    title: '删除会议成功',
+                    content: id + '已删除成功！'
+                })
+                // 更新关注列表，移除已删除的会议
+                setConferences(conferences.filter(conference => conference.conferenceId !== id));
+            })
+            .catch(error => {
+                console.error('删除会议失败:', error);
+                // 可以显示错误消息提示用户操作失败
+                Modal.error({
+                    title: '删除会议失败',
+                    content: '删除操作未能成功，请稍后重试。'
+                })
+            });
+
     };
 
     const handleEdit = () => {
@@ -80,17 +135,143 @@ const ConferenceManage: React.FC = () => {
     };
 
     const handleSubmit = (values) => {
-        onCreate(values);
+        console.log(values)
+        // 从ISO日期字符串中提取年份
+        const year = values.year.year();
+        console.log(year)
+        if (values.conferenceId && values.year !== undefined) {
+            values.year = year
+            values.conferenceId = `${values.conferenceId}${values.year}`;
+        }
+        // onCreate(values);
+        // 使用axios发送POST请求
+        axios.post('http://124.220.14.106:9001/api/conferences', values, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // 假设你的API使用Bearer token
+            }
+        }).then(response => {
+            console.log(response.data)
+            if (response.data.code == 200) {
+                setIsModalVisible(false)
+                console.log('添加会议成功', response);
+                Modal.success({
+                    title: '添加会议成功',
+                    content: '已添加成功！'
+                })
+                // 更新关注列表，添加的会议
+                setConferences(prevConferences => [...prevConferences, values]);
+            }
+            else {
+                Modal.error({
+                    title: '添加会议失败',
+                    content: '添加操作未能成功，请稍后重试。'
+                })
+            }
+        })
+            .catch(error => {
+                console.error('添加会议失败:', error);
+                // 可以显示错误消息提示用户操作失败
+                Modal.error({
+                    title: '添加会议失败',
+                    content: '添加操作未能成功，请稍后重试。'
+                })
+            });
         form.resetFields();
+    }
+
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef<InputRef>(null);
+
+    const handleSearch = (
+        selectedKeys: string[],
+        confirm: (param?: FilterConfirmProps) => void,
+        dataIndex: DataIndex,
+    ) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
     };
 
+    const handleReset = (clearFilters: () => void) => {
+        clearFilters();
+        setSearchText('');
+    };
+
+    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Conference> => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        搜索
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        重置
+                    </Button>
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        关闭
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered: boolean) => (
+            <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex]
+                .toString()
+                .toLowerCase()
+                .includes((value as string).toLowerCase()),
+        onFilterDropdownOpenChange: visible => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
+        render: text =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{ backgroundColor: 'gold', padding: 0 }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
 
     // 定义列
-    const columns = [
+    const conferenceCols = [
         {
-            title: '简称',
-            dataIndex: 'title',
-            key: 'title',
+            title: '📙简称',
+            dataIndex: 'conferenceId',
+            key: 'conferenceId',
+            align: 'center',
             render: (text, record) => (
                 <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
                     {text}
@@ -98,20 +279,24 @@ const ConferenceManage: React.FC = () => {
             ),
         },
         {
-            title: '全称',
+            title: '📖全称',
             dataIndex: 'fullTitle',
             key: 'fullTitle',
+            align: 'center',
+            ...getColumnSearchProps('fullTitle'), // 添加搜索
             render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
         },
         {
-            title: '类型',
+            title: '🏷️类型',
             dataIndex: 'sub',
             key: 'sub',
+            align: 'center',
         },
         {
-            title: 'CCF',
+            title: '🏆CCF',
             dataIndex: 'ccfRank',
             key: 'ccfRank',
+            align: 'center',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
                 if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
@@ -131,10 +316,12 @@ const ConferenceManage: React.FC = () => {
                         backgroundColor = 'grey';
                         ccfRank = 'N'
                 }
+
                 return (
                     <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
                 );
             },
+
             filters: [
                 {
                     text: 'A',
@@ -150,32 +337,12 @@ const ConferenceManage: React.FC = () => {
                 },
             ],
             onFilter: (value, record) => record.ccfRank === value,
-
         },
         {
-            title: '年份',
-            dataIndex: 'year',
-            key: 'year',
-            render: (year) => {
-                let backgroundColor;
-                if (year < 2024) {
-                    backgroundColor = 'LightGrey'
-                }
-
-                else if (year = 2024) {
-                    backgroundColor = 'LightCyan'
-                }
-                else {
-                    backgroundColor = 'Lavender'
-                }
-
-                return <span style={{ backgroundColor, padding: '5px', borderRadius: '8px' }}>{year}</span>
-            }
-        },
-        {
-            title: '延期',
+            title: '❓延期',
             dataIndex: 'isPostponed',
             key: 'isPostponed',
+            align: 'center',
             render: (isPostponed) => {
                 if (isPostponed) { // 如果延期
                     return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
@@ -183,33 +350,46 @@ const ConferenceManage: React.FC = () => {
             }
         },
         {
-            title: '摘要截止日期',
+            title: '⏰摘要截止日期',
             dataIndex: 'abstractDeadline',
             key: 'abstractDeadline',
-            render: date => <span>{date.toDateString()}</span>,
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
-            title: '全文截止日期',
+            title: '🔔全文截止日期',
             dataIndex: 'paperDeadline',
             key: 'paperDeadline',
-            render: date => <span>{date.toDateString()}</span>,
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
-            title: '开会时间',
+            title: '📅开始时间',
             dataIndex: 'startTime',
             key: 'startTime',
-            render: date => <span>{date.toDateString()}</span>,
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
-            title: '地点',
+            title: '📆结束时间',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            align: 'center',
+            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+        },
+        {
+            title: '📍地点',
             dataIndex: 'place',
             key: 'place',
-            render: place => <span>📍{place}</span>,
+            align: 'center',
+            render: place => <span>{place}</span>,
         },
         {
-            title: '接受率',
+            title: '🔖接受率',
             dataIndex: 'acceptedRate',
             key: 'acceptedRate',
+            align: 'center',
+            render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
         },
         {
             title: '操作',
@@ -219,7 +399,7 @@ const ConferenceManage: React.FC = () => {
                     <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit()} />
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setRecordToDelete(record); setDeleteModalVisible(true); }} // 确定则调用删除的接口
+                        onConfirm={() => { handleDeleteConference(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -236,7 +416,6 @@ const ConferenceManage: React.FC = () => {
         <div>
             <h3>CCF会议管理</h3>
             <Button className="addRecord" type="primary" ghost onClick={handleAddConference}>添加会议</Button>
-            <Table columns={columns} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
             <Modal title="添加会议"
                 open={isModalVisible}
                 okText="添加"
@@ -252,13 +431,11 @@ const ConferenceManage: React.FC = () => {
                         });
                 }}
                 onCancel={handleCancel}
-                >
-                {/* Your meeting form component goes here */}
+            >
                 <Form form={form} layout="vertical">
-
                     <Row gutter={16}>
                         <Col span={6}>
-                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
+                            <Form.Item name="conferenceId" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
                                 <Input />
                             </Form.Item>
                         </Col>
@@ -268,8 +445,8 @@ const ConferenceManage: React.FC = () => {
                             </Form.Item>
                         </Col>
                         <Col span={6}>
-                            <Form.Item name="session" label="届数" rules={[{ required: true, message: '请输入会议标题' }]}>
-                                <InputNumber />
+                            <Form.Item name="session" label="届数" >
+                                <InputNumber min={0} />
                             </Form.Item>
                         </Col>
                         <Col span={6}>
@@ -287,7 +464,6 @@ const ConferenceManage: React.FC = () => {
                     <Form.Item name="fullTitle" label="全称">
                         <Input />
                     </Form.Item>
-
                     <Form.Item name="dblplink" label="DBLP链接">
                         <Input />
                     </Form.Item>
@@ -295,6 +471,9 @@ const ConferenceManage: React.FC = () => {
                         <Input />
                     </Form.Item>
                     <Form.Item name="place" label="开会地址">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="acceptedRate" label="接受率">
                         <Input />
                     </Form.Item>
                     <Row gutter={16}>
@@ -324,13 +503,11 @@ const ConferenceManage: React.FC = () => {
                     <Form.Item name="topicDetails" label="会议详情">
                         <TextArea rows={5} />
                     </Form.Item>
-
                 </Form>
             </Modal>
+            <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
         </div>
     )
-
 }
-
 
 export default ConferenceManage

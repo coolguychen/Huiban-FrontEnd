@@ -23,8 +23,6 @@ const Login: React.FC = () => {
     // 从 redux 拿到全局的 userInfo state
     const userLogin = useSelector((state:any) => state.userLogin)
     const { error, userInfo } = userLogin
-    const userRegister = useSelector((state:any) => state.userRegister)
-    const { userRegisterInfo } = userRegister
 
     // 检测到登录成功就跳转到 home
     useEffect(() => {
@@ -36,7 +34,7 @@ const Login: React.FC = () => {
         
         if(userInfo) {
             console.log(userInfo)
-            navigate('/',{replace: true}) // 登录成功，成功进入当前页面
+            // navigate('/',{replace: true}) // 登录成功，成功进入当前页面
         }
     },[userInfo,error])
 

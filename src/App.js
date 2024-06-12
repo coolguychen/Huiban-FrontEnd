@@ -18,8 +18,14 @@ import Manage from './page_user/manage/manage.tsx'
 import ManagerLogin from './page_user/login/managerlogin.tsx';
 
 function App() {
-	const userLogin = useSelector(state => state.userLogin) // 通过useSelector钩子从Redux store(store.js) 中获取了 userLogin 状态的
+	const userLogin = useSelector(state => state.userLogin)
 	const { userInfo } = userLogin
+	// const role = userInfo.data.username // 用户角色'
+
+	const getRole = () => {
+		let role = userInfo ? userInfo.data.username : null
+		return role
+	}
 
 	return (
 		<BrowserRouter>
@@ -31,26 +37,30 @@ function App() {
 					<div className='nav'>
 						<NavBar />
 					</div>
-
 				</div>
 			</>
 
 			<div className="App">
-				<Routes >
-					<Route path='/' element={<HomePage />} />
-					<Route path='/conferences' element={<ConferenceInfo />} />
-					<Route path='/conferenceDetail/:id' element={userInfo ? <ConferenceDetail /> : <Login />} />
-
-					<Route path='/journals' element={<JournalInfo />} />
-					<Route path='/journalDetail/:id' element={userInfo ? <JournalDetail /> : <Login />} />
-
-					<Route path='/user' element={userInfo ? <UserInfo /> : <Login />} />
-					<Route path='/login' element={<Login />} />
-					<Route path='/register' element={<Register />} />
-
-					<Route path='/managerLogin' element={<ManagerLogin />} />
-					<Route path='/manage/*' element={<Manage />} />
-				</Routes>
+				{getRole() === 'admin' ?
+					<Routes>
+						<Route path='/login' element={<Login />} />
+						<Route path='/register' element={<Register />} />
+						<Route path='/' element={<Manage />} />
+						<Route path='/managerLogin' element={<ManagerLogin />} />
+						<Route path='/manage/*' element={<Manage />} />
+					</Routes>
+					:
+					<Routes>
+						<Route path='/' element={<HomePage />} />
+						<Route path='/login' element={<Login />} />
+						<Route path='/managerLogin' element={<ManagerLogin />} />
+						<Route path='/register' element={<Register />} />
+						<Route path='/conferences' element={userInfo ? <ConferenceInfo /> : <Login />} />
+						<Route path='/conferenceDetail/:id' element={userInfo ? <ConferenceDetail /> : <Login />} />
+						<Route path='/journals' element={userInfo ? <JournalInfo /> : <Login />} />
+						<Route path='/journalDetail/:id' element={userInfo ? <JournalDetail /> : <Login />} />
+						<Route path='/user' element={userInfo ? <UserInfo /> : <Login />} />
+					</Routes>}
 			</div>
 			<Footer />
 		</BrowserRouter>

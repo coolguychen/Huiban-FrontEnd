@@ -95,12 +95,20 @@ const UserInfo: React.FC = () => {
             .then(response => {
                 console.log('取消关注成功', response);
                 setDeleteModalVisible(false); // 关闭模态框
+                Modal.success({
+                    title: '取消关注成功',
+                    content: '您已成功取消关注。'
+                })
                 // 更新关注列表，移除已取消关注的会议
                 setStarConferences(starConferences.filter(conference => conference.conferenceId !== id));
             })
             .catch(error => {
                 console.error('取消关注失败:', error);
                 // 可以显示错误消息提示用户操作失败
+                Modal.error({
+                    title: '操作失败',
+                    content: '操作未能成功，请稍后重试。',
+                });
             });
     };
 
@@ -121,12 +129,20 @@ const UserInfo: React.FC = () => {
             .then(response => {
                 console.log('取消参加成功', response);
                 setDeleteModalVisible(false); // 关闭模态框
+                Modal.success({
+                    title: '取消参加成功',
+                    content: '您已成功取消参加。'
+                })
                 // 更新关注列表，移除已取消关注的会议
                 setAttendConferences(attendConferences.filter(conference => conference.conferenceId !== id));
             })
             .catch(error => {
                 console.error('取消参加失败:', error);
                 // 可以显示错误消息提示用户操作失败
+                Modal.error({
+                    title: '操作失败',
+                    content: '操作未能成功，请稍后重试。',
+                });
             });
     };
     const handleDeleteFollowJournal = (record) => {
@@ -145,11 +161,19 @@ const UserInfo: React.FC = () => {
             .then(response => {
                 console.log('取消关注成功', response);
                 setDeleteModalVisible(false); // 关闭模态框
+                Modal.success({
+                    title: '取消关注成功',
+                    content: '您已成功取消关注。'
+                })
                 // 更新关注列表，移除已取消关注的期刊
                 setStarJournals(starJournals.filter(journal => journal.journalId !== id));
             })
             .catch(error => {
                 console.error('取消关注失败:', error);
+                Modal.error({
+                    title: '操作失败',
+                    content: '操作未能成功，请稍后重试。',
+                });
                 // 可以显示错误消息提示用户操作失败
             });
     }
@@ -638,7 +662,7 @@ const UserInfo: React.FC = () => {
 
             <div className="right-sidebar">
                 <div className="tools-card">
-                    <text style={{fontWeight: "bold"}}>🧑‍🎓💡  科研直链</text>
+                    <text style={{ fontWeight: "bold" }}>🧑‍🎓💡  科研直链</text>
                     {tools.map(tool => (
                         <ResearchToolCard key={tool.name} name={tool.name} url={tool.url} description={tool.description} />
                     ))}

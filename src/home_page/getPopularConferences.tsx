@@ -13,14 +13,14 @@ interface popConference {
 const PopularConferences: React.FC = () => {
     const userLogin = useSelector((state: any) => state.userLogin)
     console.log(userLogin)
-    const token = userLogin.userInfo.data.token;
+    // const token = userLogin.userInfo.data.token;
     const [popConferences, setPopConferences] = useState<popConference[]>([]);
-    console.log(token)
+    // console.log(token)
     useEffect(() => {
         axios.get('http://124.220.14.106:9001/api/conferences/popularList', {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
-                'Authorization': "Bearer " + token
+                // 'Authorization': "Bearer " + token
             },
         })
             .then(response => {
