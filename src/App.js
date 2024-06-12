@@ -48,6 +48,8 @@ function App() {
 						<Route path='/' element={<Manage />} />
 						<Route path='/managerLogin' element={<ManagerLogin />} />
 						<Route path='/manage/*' element={<Manage />} />
+						<Route path='/conferenceDetail/:id' element={userInfo ? <ConferenceDetail /> : <Login />} />
+						<Route path='/journalDetail/:id' element={userInfo ? <JournalDetail /> : <Login />} />
 					</Routes>
 					:
 					<Routes>

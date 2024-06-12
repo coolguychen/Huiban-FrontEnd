@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from "react"
 import { Conference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
 import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Table } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from "moment";
-import { SearchOutlined } from '@ant-design/icons';
-import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
+import { } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
+import { ColumnType, FilterConfirmProps } from 'antd/es/table/interface';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 
@@ -90,7 +90,7 @@ const ConferenceManage: React.FC = () => {
         // 在这里调用删除接口
         console.log('调用删除接口');
         setDeleteModalVisible(false);
-        console.log('删除关注的会议：' + record);
+        console.log('删除会议：' + record);
         const id = record.conferenceId
         const apiUrl = `http://124.220.14.106:9001/api/conferences/${id}`; // 删除接口
         axios.delete(apiUrl, {
@@ -100,13 +100,21 @@ const ConferenceManage: React.FC = () => {
             }
         })
             .then(response => {
-                console.log('删除会议成功', response);
-                Modal.success({
-                    title: '删除会议成功',
-                    content: id + '已删除成功！'
-                })
-                // 更新关注列表，移除已删除的会议
-                setConferences(conferences.filter(conference => conference.conferenceId !== id));
+                if (response.data.code === 200) {
+                    console.log('删除会议成功', response);
+                    Modal.success({
+                        title: '删除会议成功',
+                        content: id + '已删除成功！'
+                    })
+                    // 更新关注列表，移除已删除的会议
+                    setConferences(conferences.filter(conference => conference.conferenceId !== id));
+                }
+                else {
+                    Modal.error({
+                        title: '删除会议失败',
+                        content:response.data.data
+                    })
+                }
             })
             .catch(error => {
                 console.error('删除会议失败:', error);
@@ -165,7 +173,7 @@ const ConferenceManage: React.FC = () => {
             else {
                 Modal.error({
                     title: '添加会议失败',
-                    content: '添加操作未能成功，请稍后重试。'
+                    content: response.data.data
                 })
             }
         })
@@ -473,9 +481,18 @@ const ConferenceManage: React.FC = () => {
                     <Form.Item name="place" label="开会地址">
                         <Input />
                     </Form.Item>
-                    <Form.Item name="acceptedRate" label="接受率">
-                        <Input />
-                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="acceptedRate" label="接受率">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="sub" label="类型">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                    </Row>
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item name="abstractDeadline" label="摘要截止时间">
