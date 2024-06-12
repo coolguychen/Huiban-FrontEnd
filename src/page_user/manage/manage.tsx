@@ -75,11 +75,11 @@ function Manage() {
             <Layout className="system-manage-right">
                 <Content >
                     <Routes>
+                        <Route path="/" element={<ConferenceManage />} />
                         <Route path="conferenceManage" element={<ConferenceManage />} />
                         <Route path='journalManage' element={<JournalManage />} />
                         <Route path="userManage" element={<UserManage />} />
                     </Routes>
-
                     <Outlet />
 
                 </Content>

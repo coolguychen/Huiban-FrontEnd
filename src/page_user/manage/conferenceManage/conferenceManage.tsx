@@ -422,7 +422,7 @@ const ConferenceManage: React.FC = () => {
 
     return (
         <div>
-            <h3>CCF会议管理</h3>
+            <h3>会议管理</h3>
             <Button className="addRecord" type="primary" ghost onClick={handleAddConference}>添加会议</Button>
             <Modal title="添加会议"
                 open={isModalVisible}

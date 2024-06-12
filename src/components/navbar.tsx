@@ -43,10 +43,10 @@ const NavBar = () => {
                         <Navbar.Collapse>
                             <Nav defaultActiveKey="home" className="justify-content-center" style={{ display: 'flex', justifyContent: 'center', flex: 1 }}>
                                 <Nav.Item style={{ margin: '0 10px', fontWeight: "bold", fontSize: "24px" }}>
-                                    管理系统
+                                    Conferenece Partner Manage System
                                 </Nav.Item>
                                 <Nav.Item style={{ margin: '0 20px 0 10px' }}>
-                                    <Nav.Link as={Link} to={"/login"} style={{textDecoration: 'none',}}
+                                    <Nav.Link as={Link} to={"/login"} style={{...linkStyle, textDecoration: 'none',}}
                                         onClick={() => { handleLogout() }}
                                     >登出</Nav.Link>
                                 </Nav.Item>

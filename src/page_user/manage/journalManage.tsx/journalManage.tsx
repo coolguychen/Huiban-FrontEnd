@@ -360,7 +360,7 @@ const JournalManage: React.FC = () => {
 
     return (
         <>
-            <h3>CCF期刊管理</h3>
+            <h3>期刊管理</h3>
             <Button className="addRecord" type="primary" ghost onClick={handleAddJournal}>添加期刊</Button>
             <Table columns={journalCols} dataSource={journals} />
             <Modal title="添加期刊"

@@ -67,9 +67,14 @@ const JournalDetail: React.FC = () => {
     const { id } = useParams(); // 获取路由参数
     console.log(id)
     const userLogin = useSelector((state: any) => state.userLogin)
-    console.log(userLogin)
+    const { userInfo } = userLogin
     const token = userLogin.userInfo.data.token;
     const email = userLogin.userInfo.data.email;
+
+    const getRole = () => {
+        let role = userInfo ? userInfo.data.username : null
+        return role
+    }
     const [journalDetail, setJournalDetail] = useState<DetailJournal>({
         journalId: "",
         ccfRank: "",
@@ -264,8 +269,8 @@ const JournalDetail: React.FC = () => {
                     <p>📚 出版社：{journalDetail.publisher}</p>
                     <p>🪄 引用分数：{journalDetail.citeScore}</p>
                     <p>🎯 影响因子: {journalDetail.impactFactor} </p>
-                    <p>🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>{journalDetail.ccfRank}</span> {" "}
-                        🌟 关注: {journalDetail.followNum} {"  "} </p>
+                    <p>🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px', marginRight: '10px'  }}>{journalDetail.ccfRank}</span> 
+                    {" "} 🌟 关注: {journalDetail.followNum} {"  "} </p>
                 </div>
                 <div className="call">
                     📢征稿
@@ -286,46 +291,47 @@ const JournalDetail: React.FC = () => {
                         renderItem={comment => <SingleComment comment={comment} />}
                     />
                 </div>
-                <div className="comment-input">
-                    <TextArea rows={4} placeholder="写下你的评论..." />
-                    <Button type="primary" onClick={() => submitComment("新评论")}>
-                        提交
-                    </Button>
-                </div>
-
+                {getRole() === 'admin' ?
+                    <div className="comment-input">
+                    </div>
+                    :
+                    <div className="comment-input">
+                        <TextArea rows={4} placeholder="写下你的评论..." />
+                        <Button type="primary" onClick={() => submitComment("新评论")}>
+                            提交
+                        </Button>
+                    </div>
+                }
             </div>
-            <div className="right-sidebar">
-                <div className="personal-card">
-                    <div className="follow-btn" onClick={addToFollowList}>
-                        <span>{isFollowed ? '➖' : '➕'}</span>
-                        <text>{isFollowed ? '取消关注' : '我要关注'}</text>
-                    </div>
-                    {/* <div className="participate-btn">
-                        <span>✈️</span>
-                        <text>我要参加</text>
-                    </div> */}
+            {getRole() === 'admin' ?
+                <div>
                 </div>
-                <div className="follow-card">
-                    <div className="star-btn">
-                        <span>🌟</span>
-                        <text>期刊收藏列表</text>
+                :
+                <div className="right-sidebar">
+                    <div className="personal-card">
+                        <div className="follow-btn" onClick={addToFollowList}>
+                            <span>{isFollowed ? '➖' : '➕'}</span>
+                            <text>{isFollowed ? '取消关注' : '我要关注'}</text>
+                        </div>
                     </div>
-
-                    <div>
-                        {followJournals.length > 0 ? (
-                            <div className="follow-list">
-                                <Table columns={followJournalCols} dataSource={followJournals}
-                                    style={{ margin: 16 }} pagination={paginationProps} />
-                            </div>
-                        ) : (
-                            <p style={{textAlign: "center", marginTop: "20px"}}>您还没有关注任何期刊。</p> // 显示当列表为空时的消息
-                        )}
+                    <div className="follow-card">
+                        <div className="star-btn">
+                            <span>🌟</span>
+                            <text>期刊收藏列表</text>
+                        </div>
+                        <div>
+                            {followJournals.length > 0 ? (
+                                <div className="follow-list">
+                                    <Table columns={followJournalCols} dataSource={followJournals}
+                                        style={{ margin: 16 }} pagination={paginationProps} />
+                                </div>
+                            ) : (
+                                <p style={{ textAlign: "center", marginTop: "20px" }}>您还没有关注任何期刊。</p> // 显示当列表为空时的消息
+                            )}
+                        </div>
                     </div>
-
-
                 </div>
-
-            </div>
+            }
         </div>
     );
 };

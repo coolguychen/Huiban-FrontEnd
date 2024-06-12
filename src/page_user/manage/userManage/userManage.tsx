@@ -51,18 +51,19 @@ const UserManage: React.FC = () => {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
     const userCols = [
-        { title: '用户名', dataIndex: 'userName', key: 'userName' },
-        { title: '邮箱', dataIndex: 'email', key: 'email' },
-        { title: '机构', dataIndex: 'institution', key: 'institution' },
+        { title: '🧑‍🎓用户名', dataIndex: 'userName', key: 'userName', align: 'center' },
+        { title: '📮邮箱', dataIndex: 'email', key: 'email', align: 'center' },
+        { title: '🏢科研机构', dataIndex: 'institution', key: 'institution', align: 'center' },
         {
             title: '操作',
             key: 'action',
+            align: 'center',
             render: (text, record) => (
                 <Space size="middle">
                     <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit(record)} />
                     <Popconfirm
                         title="确定要删除吗？"
-                        onConfirm={() => { setDeleteModalVisible(true);handleDeleteUser(record)}} // 确定则调用删除的接口
+                        onConfirm={() => { setDeleteModalVisible(true); handleDeleteUser(record) }} // 确定则调用删除的接口
                         okText="确认"
                         cancelText="取消"
                     >
@@ -131,7 +132,11 @@ const UserManage: React.FC = () => {
     };
 
     const handleSubmit = (values) => {
-        values.imageUrl = '';
+        //默认图片地址
+        values.imageUrl = "https://iconfont.alicdn.com/p/illus/preview_image/1SAIt26l6ecK/762012e7-e856-46b2-95f1-3abf4a83c560.png";
+        values.followConferences = []
+        values.followJournals = []
+        values.attendConferences = []
         console.log(values)
         axios.post('http://124.220.14.106:9001/api/users', values, {
             headers: {
@@ -200,7 +205,7 @@ const UserManage: React.FC = () => {
                     { min: 6, message: '密码至少需要6位' }]}>
                         <Input.Password />
                     </Form.Item>
-                    <Form.Item name="instituition" label="科研机构">
+                    <Form.Item name="institution" label="科研机构">
                         <Input />
                     </Form.Item>
                 </Form>

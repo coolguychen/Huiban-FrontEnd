@@ -66,9 +66,15 @@ const ConferenceDetail: React.FC = () => {
     const { id } = useParams(); // 获取路由参数
     console.log(id)
     const userLogin = useSelector((state: any) => state.userLogin)
-    console.log(userLogin)
+    const { userInfo } = userLogin
     const token = userLogin.userInfo.data.token;
     const email = userLogin.userInfo.data.email;
+
+    const getRole = () => {
+        let role = userInfo ? userInfo.data.username : null
+        return role
+    }
+
     const [conferenceDetail, setConferenceDetail] = useState<DetailConference>({
         conferenceId: "",
         fullTitle: "",
@@ -114,7 +120,7 @@ const ConferenceDetail: React.FC = () => {
                 console.log(conferenceInAttendList)
                 setIsFollowed(conferenceInFollowList);
                 setIsAttended(conferenceInAttendList);
-                return {conferenceInFollowList, conferenceInAttendList}
+                return { conferenceInFollowList, conferenceInAttendList }
             })
             .catch(error => {
                 console.log('Error', error.message);
@@ -325,8 +331,8 @@ const ConferenceDetail: React.FC = () => {
                     <p>📅 会议开始日期: {formatDate(conferenceDetail.startTime)} </p>
                     <p>📆 会议结束日期: {formatDate(conferenceDetail.startTime)} </p>
                     <p>🎯 届数: {conferenceDetail.sessionNum} </p>
-                    <p> 🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px' }}>{conferenceDetail.ccfRank}</span> {" "}
-                        🌟 关注: {conferenceDetail.followNum} {"  "}
+                    <p> 🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px', marginRight: '10px'  }}>{conferenceDetail.ccfRank}</span> {" "}
+                        <span style={{marginRight: '10px'}}>🌟 关注: {conferenceDetail.followNum} </span>
                         ✈️ 参加: {conferenceDetail.attendNum}</p>
                 </div>
 
@@ -349,42 +355,51 @@ const ConferenceDetail: React.FC = () => {
                         renderItem={comment => <SingleComment comment={comment} />}
                     />
                 </div>
-                <div className="comment-input">
-                    <TextArea rows={4} placeholder="写下你的评论..." />
-                    <Button type="primary" onClick={() => submitComment("新评论")}>
-                        提交
-                    </Button>
-                </div>
+                {getRole() === 'admin' ?
+                    <div className="comment-input"></div>
+                    :
+                    <>
+                        <div className="comment-input">
+                            <TextArea rows={4} placeholder="写下你的评论..." />
+                            <Button type="primary" onClick={() => submitComment("新评论")}>
+                                提交
+                            </Button>
+                        </div>
+                    </>}
             </div>
-            <div className="right-sidebar">
-                <div className="personal-card">
-                    <div className="follow-btn" onClick={addToFollowList}>
-                        <span>{isFollowed ? '➖' : '➕'}</span>
-                        <text>{isFollowed ? '取消关注' : '我要关注'}</text>
+            {getRole() === 'admin' ?
+                <div></div>
+                :
+                <div className="right-sidebar">
+                    <div className="personal-card">
+                        <div className="follow-btn" onClick={addToFollowList}>
+                            <span>{isFollowed ? '➖' : '➕'}</span>
+                            <text>{isFollowed ? '取消关注' : '我要关注'}</text>
+                        </div>
+                        <div className="participate-btn" onClick={addToAttendList}>
+                            <span>{isAttended ? '✖️' : '✈️'}</span>
+                            <text>{isAttended ? '取消参加' : '我要参加'}</text>
+                        </div>
                     </div>
-                    <div className="participate-btn" onClick={addToAttendList}>
-                        <span>{isAttended ? '✖️' : '✈️'}</span>
-                        <text>{isAttended ? '取消参加' : '我要参加'}</text>
+                    <div className="follow-card">
+                        <div className="star-btn">
+                            <span>🌟</span>
+                            <text>会议收藏列表</text>
+                        </div>
+                        <div>
+                            {followConferences.length > 0 ? (
+                                <div className="follow-list">
+                                    <Table columns={followConferenceCols} dataSource={followConferences}
+                                        style={{ margin: 16 }} pagination={paginationProps} />
+                                </div>
+                            ) : (
+                                <p style={{ textAlign: "center", marginTop: "20px" }}>您还没有关注任何会议。</p> // 显示当列表为空时的消息
+                            )}
+                        </div>
                     </div>
-                </div>
-                <div className="follow-card">
-                    <div className="star-btn">
-                        <span>🌟</span>
-                        <text>会议收藏列表</text>
-                    </div>
-                    <div>
-                        {followConferences.length > 0 ? (
-                            <div className="follow-list">
-                                <Table columns={followConferenceCols} dataSource={followConferences}
-                                    style={{ margin: 16 }} pagination={paginationProps} />
-                            </div>
-                        ) : (
-                            <p style={{ textAlign: "center", marginTop: "20px" }}>您还没有关注任何会议。</p> // 显示当列表为空时的消息
-                        )}
-                    </div>
-                </div>
 
-            </div>
+                </div>
+            }
         </div>
     );
 };
