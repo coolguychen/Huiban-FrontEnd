@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Conference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
-import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Table } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Table, message } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { } from '@ant-design/icons';
@@ -102,27 +102,18 @@ const ConferenceManage: React.FC = () => {
             .then(response => {
                 if (response.data.code === 200) {
                     console.log('删除会议成功', response);
-                    Modal.success({
-                        title: '删除会议成功',
-                        content: id + '已删除成功！'
-                    })
+                    message.success(id + '已删除成功！')
                     // 更新关注列表，移除已删除的会议
                     setConferences(conferences.filter(conference => conference.conferenceId !== id));
                 }
                 else {
-                    Modal.error({
-                        title: '删除会议失败',
-                        content:response.data.data
-                    })
+                    message.error(response.data.data)
                 }
             })
             .catch(error => {
                 console.error('删除会议失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '删除会议失败',
-                    content: '删除操作未能成功，请稍后重试。'
-                })
+                message.error('删除操作未能成功，请稍后重试。')
             });
 
     };
@@ -163,27 +154,18 @@ const ConferenceManage: React.FC = () => {
             if (response.data.code == 200) {
                 setIsModalVisible(false)
                 console.log('添加会议成功', response);
-                Modal.success({
-                    title: '添加会议成功',
-                    content: '已添加成功！'
-                })
+                message.success('添加会议成功！')
                 // 更新关注列表，添加的会议
                 setConferences(prevConferences => [...prevConferences, values]);
             }
             else {
-                Modal.error({
-                    title: '添加会议失败',
-                    content: response.data.data
-                })
+                message.error(response.data.data)
             }
         })
             .catch(error => {
                 console.error('添加会议失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '添加会议失败',
-                    content: '添加操作未能成功，请稍后重试。'
-                })
+                message.error('添加操作未能成功，请稍后重试。')
             });
         form.resetFields();
     }

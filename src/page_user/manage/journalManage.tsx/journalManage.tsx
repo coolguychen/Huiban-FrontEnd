@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef } from 'antd';
+import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef, message } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -283,30 +283,22 @@ const JournalManage: React.FC = () => {
                 if (response.data.code === 200) {
                     setDeleteModalVisible(false);
                     console.log('删除期刊成功', response);
-                    Modal.success({
-                        title: '删除期刊成功',
-                        content: id + '已删除成功！'
-                    })
+                    message.success(id + '已删除成功！')
+    
                     // 更新关注列表，移除已删除的会议
                     setJournals(journals.filter(journal => journal.journalId !== id));
                 }
                 else {
                     console.error('删除期刊失败:',);
                     // 可以显示错误消息提示用户操作失败
-                    Modal.error({
-                        title: '删除期刊失败',
-                        content: response.data.data
-                    })
+                    message.error(response.data.data)
                 }
 
             })
             .catch(error => {
                 console.error('删除期刊失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '删除期刊失败',
-                    content: '删除期刊未能成功，请稍后重试。'
-                })
+                message.error('删除期刊未能成功，请稍后重试。')
             });
     };
     const handleEdit = () => {
@@ -332,31 +324,21 @@ const JournalManage: React.FC = () => {
             if (response.data.code == 200) {
                 setIsModalVisible(false)
                 console.log('添加期刊成功', response);
-                Modal.success({
-                    title: '添加期刊成功',
-                    content: '已添加成功！'
-                })
+                message.success('添加期刊成功')
                 // 更新关注列表，添加的会议
                 setJournals(prevJournals => [...prevJournals, values]);
             }
             else {
-                Modal.error({
-                    title: '添加期刊失败',
-                    content: response.data.data
-                })
+                message.error(response.data.data)
             }
         })
             .catch(error => {
                 console.error('添加期刊失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '添加期刊失败',
-                    content: '添加操作未能成功，请稍后重试。'
-                })
+                message.error('添加操作未能成功，请稍后重试。')
             });
         form.resetFields();
     };
-
 
     return (
         <>

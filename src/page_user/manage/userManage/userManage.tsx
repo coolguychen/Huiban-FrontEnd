@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef } from 'antd';
+import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef, message } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -94,29 +94,20 @@ const UserManage: React.FC = () => {
                 if (response.data.code === 200) {
                     setDeleteModalVisible(false);
                     console.log('删除用户成功', response);
-                    Modal.success({
-                        title: '删除用户成功',
-                        content: email + '已删除成功！'
-                    })
+                    message.success('删除用户成功')
                     // 更新关注列表，移除已删除的会议
                     setUsers(users.filter(user => user.email !== email));
                 }
                 else {
                     console.error('删除用户失败:',);
                     // 可以显示错误消息提示用户操作失败
-                    Modal.error({
-                        title: '删除用户失败',
-                        content: response.data.data
-                    })
+                    message.error(response.data.data)
                 }
             })
             .catch(error => {
                 console.error('删除用户失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '删除用户失败',
-                    content: '删除用户未能成功，请稍后重试。'
-                })
+                message.error('删除用户未能成功，请稍后重试。')
             });
     };
 
@@ -148,27 +139,18 @@ const UserManage: React.FC = () => {
             if (response.data.code == 200) {
                 setIsModalVisible(false)
                 console.log('添加用户成功', response);
-                Modal.success({
-                    title: '添加用户成功',
-                    content: '已添加成功！'
-                })
+                message.success("添加用户成功！")
                 // 更新关注列表，添加的会议
                 setUsers(prevUser => [...prevUser, values]);
             }
             else {
-                Modal.error({
-                    title: '添加用户失败',
-                    content: response.data.data
-                })
+                message.error(response.data.data)
             }
         })
             .catch(error => {
                 console.error('添加用户失败:', error);
                 // 可以显示错误消息提示用户操作失败
-                Modal.error({
-                    title: '添加用户失败',
-                    content: '添加操作未能成功，请稍后重试。'
-                })
+                message.error('添加操作未能成功，请稍后重试。')
             });
         form.resetFields();
     }

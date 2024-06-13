@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Col } from 'antd';
+import { Form, Input, Button, Col, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import Research from "../../assets/images/explore1.png"
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,29 +26,23 @@ const Login: React.FC = () => {
 
     // 检测到登录成功就跳转到 home
     useEffect(() => {
-        console.log(userLogin)
-        console.log(error)
         console.log(userInfo)
         if (error == '邮箱或密码错误') {
             setWrongMessage('Wrong password or wrong email!');
         } else {
             setWrongMessage('Account does not exist!')
         }
-
         if (userInfo) {
             console.log(userInfo)
-            // navigate('/', { replace: true }) // 登录成功，成功进入当前页面
+            navigate('/', { replace: true }) // 登录成功，成功进入当前页面
         }
     }, [userInfo, error])
 
     const onFinish = (values, e) => {
         console.log('Received values:', values);
-        // 在这里处理登录逻辑，可以进行数据验证、发送至后端等操作
-        // e.preventDefault()
         // 执行登录动作
         console.log(email, password)
         dispatch(login(email, password))
-        // dispatch(registerout())
     };
 
     return (
@@ -60,17 +54,6 @@ const Login: React.FC = () => {
                     onFinish={onFinish}
                     scrollToFirstError
                 >
-                    {/* <Form.Item
-                        name="username"
-                        label="用户名"
-                        rules={[{ required: true, message: '请输入用户名!' }]}
-                    >
-                        <Input onChange={(e)=>{
-                            console.log(e.target.value)
-                            setUsername(e.target.value)}
-                         } />
-                    </Form.Item> */}
-
                     <Form.Item
                         name="username"
                         label="邮箱"
@@ -82,7 +65,7 @@ const Login: React.FC = () => {
                     <Form.Item
                         name="password"
                         label="密码"
-                        rules={[{ required: true, message: '请输入密码!' }]}
+                        rules={[{ required: true, message: '请输入密码!' }, {min:6, message: '密码至少为6位！'}]}
                         hasFeedback
                     >
                         <Input.Password onChange={(e) => setPassword(e.target.value)} />
