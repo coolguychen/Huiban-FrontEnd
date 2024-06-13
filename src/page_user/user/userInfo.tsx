@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { User } from "./userType"
 import { Link } from "react-router-dom";
 import { Conference } from "../conference/conferenceType";
-import { Button, Input, Table, Modal, Space, Popconfirm } from "antd";
+import { Button, Input, Table, Modal, Space, Popconfirm, Flex, message, Form } from "antd";
 import Journal from "../journal/journalType";
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
@@ -560,18 +560,154 @@ const UserInfo: React.FC = () => {
 
     const [editing, setEditing] = useState(false);
     const [editedUser, setEditedUser] = useState({ userName: userData.userName, email: userData.email, institution: userData.institution });
+    const [editPasswordForm, setEditPasswordForm] = useState(false);
+
+    interface CollectionCreateFormProps {
+        open: boolean;
+        onCancel: () => void;
+    }
 
     const handleEditClick = () => {
         setEditing(true);
     };
 
+    const handleEditPasswordClick = () => {
+        setEditPasswordForm(true);
+    }
+
+    //修改密码的表单
+    const EditPasswordForm: React.FC<CollectionCreateFormProps> = ({
+        open,
+        onCancel,
+    }) => {
+        const [form] = Form.useForm();
+        const [password, setPassword] = useState<string>('');
+        return (
+            //用Modal弹出表单
+            <Modal
+                open={open} //是
+                title="修改密码"
+                okText="确定"
+                cancelText="取消"
+                onCancel={onCancel}
+                onOk={() => {
+                    form
+                        .validateFields()
+                        .then((values) => {
+                            form.resetFields();
+                            const apiUrl = 'http://124.220.14.106:9001/api/users/changePassword'; // 用户信息更新接口
+                            axios.put(apiUrl, {
+                                password: values.password,
+                            }, {
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                                .then((response) => {
+                                    if (response.status === 200) {
+                                        console.log(response)
+                                        message.success('修改密码成功！')
+                                        setEditPasswordForm(false);
+                                    }
+                                })
+
+                                .catch((err) => {
+                                    console.log(err.message);
+                                    message.error('修改失败，请稍后再试！')
+                                });
+                        })
+                        .catch((info) => {
+                            console.log('Validate Failed:', info);
+                        });
+                }}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="form_in_modal"
+                    initialValues={{ modifier: 'public' }}
+                >
+                    <Form.Item
+                        name="password"
+                        label="密码"
+                        rules={[
+                            { required: true, message: '请输入新密码!' },
+                            { min: 6, message: '密码至少为6位!' },
+
+                        ]}
+                        hasFeedback
+                    >
+                        <Input.Password onChange={(e) => setPassword(e.target.value)} />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="confirmPassword"
+                        label="确认新密码"
+                        dependencies={['password']}
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: '请确认新密码!',
+                            },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (!value || getFieldValue('password') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('两次输入的密码不一致!'));
+                                },
+                            }),
+                        ]}
+                    >
+                        <Input.Password />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    };
+
+
     const handleSave = () => {
         // 这里可以添加保存逻辑，比如提交表单等操作
+        const apiUrl = 'http://124.220.14.106:9001/api/users/update'; // 用户信息更新接口
+        console.log(editedUser.email)
+        axios.put(apiUrl, {
+            email: email,
+            userName: editedUser.userName,
+            institution: editedUser.institution,
+            imageUrl: userData.imageUrl
+        }, {
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                console.log(response);
+                message.success('修改成功')
+                let userDataTmp: User = {
+                    imageUrl: userData.imageUrl,
+                    userName: editedUser.userName,
+                    email: userData.email,
+                    institution: editedUser.institution,
+                    followConferences: userData.followConferences,
+                    followJournals: userData.followJournals,
+                    attendConferences: userData.attendConferences
+                };
+                setUserData(userDataTmp);
+            })
+            .catch(error => {
+                console.error(error);
+                message.error('修改失败，请稍后再试！');
+                // 可以显示错误消息提示用户操作失败
+            });
+
         setEditing(false);
     };
 
     const handleCancel = () => {
-        // 这里可以添加保存逻辑，比如提交表单等操作
         setEditing(false);
     };
 
@@ -589,6 +725,12 @@ const UserInfo: React.FC = () => {
             <div className="left-sidebar">
                 <div className="basic-info">
                     <h3 className="info">📂 个人信息</h3>
+                    {/* 修改密码的表单 open为true时弹出 */}
+                    <EditPasswordForm
+                        open={editPasswordForm}
+                        onCancel={() => {
+                            setEditPasswordForm(false);
+                        }} />
                     <div className="avatar-container">
                         <div className="avatar">
                             <img src={userData.imageUrl} alt="User Avatar" />
@@ -602,11 +744,11 @@ const UserInfo: React.FC = () => {
                                     onChange={handleChange}
                                     placeholder="用户名" />
                             </div>
-                            <div>
+                            {/* <div>
                                 <span>📧邮箱：</span>
                                 <Input type="text" name="email" value={editedUser.email}
                                     onChange={handleChange} placeholder="邮箱" />
-                            </div>
+                            </div> */}
                             <div>
                                 <span>🏢科研机构: </span>
                                 <Input type="text" name="institution" value={editedUser.institution}
@@ -618,13 +760,18 @@ const UserInfo: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <div>
+                        <div className="info-detail">
                             <p>📝用户名：{userData.userName}</p>
                             <p>📧邮箱: {userData.email}</p>
                             <p>🏢科研机构: {userData.institution}</p>
-                            <Button type="primary" ghost onClick={handleEditClick}>
-                                修改
-                            </Button>
+                            <Flex gap="middle" wrap>
+                                <Button type="primary" ghost onClick={handleEditClick}>
+                                    修改个人信息
+                                </Button>
+                                <Button type="primary" ghost onClick={handleEditPasswordClick}>
+                                    修改密码
+                                </Button>
+                            </Flex>
                         </div>
                     )}
                 </div>
@@ -669,7 +816,7 @@ const UserInfo: React.FC = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     )
 
 }
