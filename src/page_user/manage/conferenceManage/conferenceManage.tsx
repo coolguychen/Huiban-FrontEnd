@@ -138,6 +138,7 @@ const ConferenceManage: React.FC = () => {
         // 从ISO日期字符串中提取年份
         const year = values.year.year();
         console.log(year)
+        values.title = values.conferenceId
         if (values.conferenceId && values.year !== undefined) {
             values.year = year
             values.conferenceId = `${values.conferenceId}${values.year}`;
@@ -274,7 +275,7 @@ const ConferenceManage: React.FC = () => {
             key: 'fullTitle',
             align: 'center',
             ...getColumnSearchProps('fullTitle'), // 添加搜索
-            render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
+            render: (text, record) => <a href={record.mainpageLink} target='_blank'>{text}</a> //点击全称 跳转到主页
         },
         {
             title: '🏷️类型',
