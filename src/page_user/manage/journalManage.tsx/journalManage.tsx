@@ -349,15 +349,8 @@ const JournalManage: React.FC = () => {
                     form
                         .validateFields()
                         .then((values) => {
-                            const year = values.year.year();
-                            console.log(year)
-                            values.year = year
-                            values.conferenceId = `${values.title}${values.year}`;
-
                             console.log(values)
-                            form.resetFields();
-                            const apiUrl = 'http://124.220.14.106:9001/api/conferences/update'; // 会议信息更新接口
-                            console.log(values)
+                            const apiUrl = 'http://124.220.14.106:9001/api/journals/update'; // 会议信息更新接口
                             axios.put(apiUrl, values, {
                                 headers: {
                                     'Content-Type': 'application/json; charset=UTF-8',
@@ -366,11 +359,15 @@ const JournalManage: React.FC = () => {
                             })
                                 .then((response) => {
                                     console.log(response)
-                                    if (response.status === 200) {
+                                    if (response.data.code === 200) {
                                         console.log(response)
                                         message.success('修改成功！')
                                         setEditJournalForm(false);
                                         setCount(count + 1)
+                                        form.resetFields();
+                                    } else {
+                                        message.error('修改失败，请稍后再试！')
+                                        setEditJournalForm(false);
                                     }
                                 })
                                 .catch((err) => {
@@ -385,8 +382,8 @@ const JournalManage: React.FC = () => {
             >
                 <Form form={form} layout="horizontal" name="form_in_modal"
                 >
-                    <Form.Item name="journalId" label="期刊名称" rules={[{ required: true, message: '请输入期刊标题' }]}>
-                        <Input />
+                    <Form.Item name="journalId" label="期刊名称" >
+                        <Input disabled />
                     </Form.Item>
                     <Row gutter={16}>
                         <Col span={8}>

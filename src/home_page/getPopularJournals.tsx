@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 
-interface popJournal  {
+interface popJournal {
     journalId: string,
     followNum: number
 }

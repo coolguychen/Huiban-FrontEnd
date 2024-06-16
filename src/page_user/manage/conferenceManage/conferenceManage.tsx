@@ -189,11 +189,14 @@ const ConferenceManage: React.FC = () => {
                             })
                                 .then((response) => {
                                     console.log(response)
-                                    if (response.status === 200) {
+                                    if (response.data.code === 200) {
                                         console.log(response)
                                         message.success('修改成功！')
                                         setEditConferenceForm(false);
                                         setCount(count + 1)
+                                    } else {
+                                        message.error('修改失败，请稍后再试！')
+                                        setEditConferenceForm(false);
                                     }
                                 })
                                 .catch((err) => {
@@ -210,13 +213,13 @@ const ConferenceManage: React.FC = () => {
                 >
                     <Row gutter={16}>
                         <Col span={6}>
-                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
-                                <Input />
+                            <Form.Item name="title" label="简称" >
+                                <Input disabled />
                             </Form.Item>
                         </Col>
                         <Col span={6}>
-                            <Form.Item name="year" label="年份" rules={[{ required: true }]}>
-                                <DatePicker picker="year" />
+                            <Form.Item name="year" label="年份" >
+                                <DatePicker picker="year" disabled />
                                 {/* <Input /> */}
                             </Form.Item>
                         </Col>
