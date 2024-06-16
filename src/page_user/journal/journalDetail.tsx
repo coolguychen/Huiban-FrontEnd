@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, List, Modal, Table } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import SingleComment from "../conference/commentType.tsx";
+import { UserComment, SingleComment } from "../conference/commentType.tsx";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import { DetailJournal, Journal } from "./journalType.tsx";
@@ -269,8 +269,8 @@ const JournalDetail: React.FC = () => {
                     <p>📚 出版社：{journalDetail.publisher}</p>
                     <p>🪄 引用分数：{journalDetail.citeScore}</p>
                     <p>🎯 影响因子: {journalDetail.impactFactor} </p>
-                    <p>🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px', marginRight: '10px'  }}>{journalDetail.ccfRank}</span> 
-                    {" "} 🌟 关注: {journalDetail.followNum} {"  "} </p>
+                    <p>🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px', marginRight: '10px' }}>{journalDetail.ccfRank}</span>
+                        {" "} 🌟 关注: {journalDetail.followNum} {"  "} </p>
                 </div>
                 <div className="call">
                     📢征稿

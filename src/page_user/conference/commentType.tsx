@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Comment 类型
-type UserComment = {
+export type UserComment = {
     id: number;
     userName: string;
     imageUrl: string;
@@ -17,7 +17,7 @@ type UserComment = {
 };
 
 // 单条评论组件
-const SingleComment: React.FC<{ comment: UserComment }> = ({ comment }) => (
+export const SingleComment: React.FC<{ comment: UserComment }> = ({ comment }) => (
     <>
         <div className="comment-container">
             <div className="user-info">
@@ -43,5 +43,3 @@ const SingleComment: React.FC<{ comment: UserComment }> = ({ comment }) => (
         )}
     </>
 );
-
-export default SingleComment;

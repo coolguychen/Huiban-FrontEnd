@@ -694,10 +694,10 @@ const ConferenceManage: React.FC = () => {
                     <Form.Item name="fullTitle" label="全称">
                         <Input />
                     </Form.Item>
-                    <Form.Item name="dblplink" label="DBLP链接">
+                    <Form.Item name="dblpLink" label="DBLP链接">
                         <Input />
                     </Form.Item>
-                    <Form.Item name="mainpagelink" label="主页链接">
+                    <Form.Item name="mainpageLink" label="主页链接">
                         <Input />
                     </Form.Item>
                     <Form.Item name="place" label="开会地址">

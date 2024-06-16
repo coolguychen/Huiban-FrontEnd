@@ -27,7 +27,7 @@ const Login: React.FC = () => {
     // 检测到登录成功就跳转到 home
     useEffect(() => {
         console.log(userInfo)
-        if (error == '邮箱或密码错误') {
+        if (error === '邮箱或密码错误') {
             setWrongMessage('Wrong password or wrong email!');
         } else {
             setWrongMessage('Account does not exist!')
@@ -65,7 +65,7 @@ const Login: React.FC = () => {
                     <Form.Item
                         name="password"
                         label="密码"
-                        rules={[{ required: true, message: '请输入密码!' }, {min:6, message: '密码至少为6位！'}]}
+                        rules={[{ required: true, message: '请输入密码!' }, { min: 6, message: '密码至少为6位！' }]}
                         hasFeedback
                     >
                         <Input.Password onChange={(e) => setPassword(e.target.value)} />

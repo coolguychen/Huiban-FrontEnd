@@ -6,7 +6,7 @@ import axios from "axios";
 import { ColumnType } from "antd/es/table";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { useSelector } from "react-redux";
-import { Journal } from "../../journal/journalType";
+import { Journal, DetailJournal } from "../../journal/journalType";
 import Highlighter from 'react-highlight-words';
 
 
@@ -20,13 +20,15 @@ const JournalManage: React.FC = () => {
     const userLogin = useSelector((state: any) => state.userLogin)
     console.log(userLogin)
     const token = userLogin.userInfo.data.token;
-    const [journals, setJournals] = useState<Journal[]>([]);
+    const [journals, setJournals] = useState<DetailJournal[]>([]);
+
+    const [count, setCount] = useState(0)//负责页面更新
 
     const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
-        axios.get('http://124.220.14.106:9001/api/journals/list', {
+        axios.get('http://124.220.14.106:9001/api/journals/list/detail', {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
                 'Authorization': "Bearer " + token
@@ -38,7 +40,7 @@ const JournalManage: React.FC = () => {
                 console.log(data)
                 let records = data.data;
                 console.log(records)
-                let journalTmp: Journal[] = [];
+                let journalTmp: DetailJournal[] = [];
                 for (let i = 0; i < records.length; i++) {
                     journalTmp.push({
                         journalId: records[i].journalId,
@@ -46,7 +48,11 @@ const JournalManage: React.FC = () => {
                         sub: records[i].sub,
                         publisher: records[i].publisher,
                         citeScore: records[i].citeScore,
-                        impactFactor: records[i].impactFactor
+                        impactFactor: records[i].impactFactor,
+                        dblpLink: records[i].dblpLink,
+                        mainpageLink: records[i].mainpageLink,
+                        followNum: records[i].followNum,
+                        topicDetails: records[i].topicDetails
                     });
                 }
                 setJournals(journalTmp);
@@ -55,7 +61,7 @@ const JournalManage: React.FC = () => {
             .catch(error => {
                 console.log('Error', error.message);
             });
-    }, []);
+    }, [count]);
 
     //分页默认值，记得import useState
     const [pageOption, setPageOption] = useState({
@@ -250,7 +256,13 @@ const JournalManage: React.FC = () => {
             key: 'action',
             render: (text, record) => (
                 <Space size="middle">
-                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit()} />
+                    <EditJournalForm
+                        open={editJournalForm}
+                        record={editRecord}
+                        onCancel={() => {
+                            setEditJournalForm(false);
+                        }} />
+                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit(record)} />
                     <Popconfirm
                         title="确定要删除吗？"
                         onConfirm={() => { setDeleteModalVisible(true); handleDeleteJournal(record) }} // 确定则调用删除的接口
@@ -264,7 +276,7 @@ const JournalManage: React.FC = () => {
         }
     ];
 
-    /**删除会议 */
+    /**删除期刊 */
     const handleDeleteJournal = (record) => {
         // 在这里调用删除接口
         console.log('调用删除接口');
@@ -284,7 +296,7 @@ const JournalManage: React.FC = () => {
                     setDeleteModalVisible(false);
                     console.log('删除期刊成功', response);
                     message.success(id + '已删除成功！')
-    
+
                     // 更新关注列表，移除已删除的会议
                     setJournals(journals.filter(journal => journal.journalId !== id));
                 }
@@ -301,10 +313,153 @@ const JournalManage: React.FC = () => {
                 message.error('删除期刊未能成功，请稍后重试。')
             });
     };
-    const handleEdit = () => {
-        console.log('弹出编辑的表单？');
+
+
+    /**编辑期刊 */
+    const [editJournalForm, setEditJournalForm] = useState(false);
+    interface CollectionEditFormProps {
+        open: boolean;
+        record: DetailJournal;
+        onCancel: () => void;
     }
 
+    const [editRecord, setEditRecord] = useState<DetailJournal>();
+
+    const EditJournalForm: React.FC<CollectionEditFormProps> = ({
+        open,
+        record,
+        onCancel,
+    }) => {
+        const [form] = Form.useForm();
+
+        if (record) {
+            console.log(record)
+            form.setFieldsValue(record)
+        }
+        return (
+            //用Modal弹出表单
+            <Modal
+                open={open} //是
+                title="修改用户信息"
+                okText="确定"
+                cancelText="取消"
+                onCancel={onCancel}
+                width={800}
+                onOk={() => {
+                    form
+                        .validateFields()
+                        .then((values) => {
+                            const year = values.year.year();
+                            console.log(year)
+                            values.year = year
+                            values.conferenceId = `${values.title}${values.year}`;
+
+                            console.log(values)
+                            form.resetFields();
+                            const apiUrl = 'http://124.220.14.106:9001/api/conferences/update'; // 会议信息更新接口
+                            console.log(values)
+                            axios.put(apiUrl, values, {
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                                .then((response) => {
+                                    console.log(response)
+                                    if (response.status === 200) {
+                                        console.log(response)
+                                        message.success('修改成功！')
+                                        setEditJournalForm(false);
+                                        setCount(count + 1)
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.log(err.message);
+                                    message.error('修改失败，请稍后再试！')
+                                });
+                        })
+                        .catch((info) => {
+                            console.log('Validate Failed:', info);
+                        });
+                }}
+            >
+                <Form form={form} layout="horizontal" name="form_in_modal"
+                >
+                    <Form.Item name="journalId" label="期刊名称" rules={[{ required: true, message: '请输入期刊标题' }]}>
+                        <Input />
+                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={8}>
+                            <Form.Item name="ccfRank" label="CCF 排名" rules={[{ required: true, message: '请选择CCF排名' }]}>
+                                <Select>
+                                    <Option value="">请选择</Option>
+                                    <Option value="A">A</Option>
+                                    <Option value="B">B</Option>
+                                    <Option value="C">C</Option>
+                                    <Option value="null">NULL</Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="sub" label="类型">
+                                <Select>
+                                    <Select.Option value="计算机架构/并行编程/存储技术">计算机架构/并行编程/存储技术</Select.Option>
+                                    <Select.Option value="网络系统">网络系统</Select.Option>
+                                    <Select.Option value="网络与系统安全">网络与系统安全</Select.Option>
+                                    <Select.Option value="软件工程/操作系统/程序设计语言">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="计算理论">计算理论</Select.Option>
+                                    <Select.Option value="图形学">图形学</Select.Option>
+                                    <Select.Option value="人工智能">人工智能</Select.Option>
+                                    <Select.Option value="人机交互">人机交互</Select.Option>
+                                    <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={8}>
+                            <Form.Item name="publisher" label="出版社">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="dblpLink" label="DBLP链接">
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item name="mainpageLink" label="主页链接">
+                        <Input />
+                    </Form.Item>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="citeScore" label="引用分数">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="impactFactor" label="影响因子">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Form.Item name="topicDetails" label="期刊详情">
+                        <TextArea rows={5} />
+                    </Form.Item>
+
+                </Form>
+            </Modal>
+        )
+    };
+
+    const handleEdit = (record) => {
+        console.log('弹出编辑的表单？');
+        console.log(record)
+        setEditRecord(record)
+        setEditJournalForm(true)
+    }
+
+    /**增加会议 */
     const handleAddJournal = () => {
         setIsModalVisible(true);
     };
@@ -314,6 +469,8 @@ const JournalManage: React.FC = () => {
     };
 
     const handleSubmit = (values) => {
+        console.log(values)
+        values.followNum = 0
         axios.post('http://124.220.14.106:9001/api/journals', values, {
             headers: {
                 'Content-Type': 'application/json',
@@ -321,7 +478,7 @@ const JournalManage: React.FC = () => {
             }
         }).then(response => {
             console.log(response.data)
-            if (response.data.code == 200) {
+            if (response.data.code === 200) {
                 setIsModalVisible(false)
                 console.log('添加期刊成功', response);
                 message.success('添加期刊成功')
@@ -380,7 +537,18 @@ const JournalManage: React.FC = () => {
                         </Col>
                         <Col span={8}>
                             <Form.Item name="sub" label="类型">
-                                <Input />
+                                <Select>
+                                    <Select.Option value="计算机架构/并行编程/存储技术">计算机架构/并行编程/存储技术</Select.Option>
+                                    <Select.Option value="网络系统">网络系统</Select.Option>
+                                    <Select.Option value="网络与系统安全">网络与系统安全</Select.Option>
+                                    <Select.Option value="软件工程/操作系统/程序设计语言">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="计算理论">计算理论</Select.Option>
+                                    <Select.Option value="图形学">图形学</Select.Option>
+                                    <Select.Option value="人工智能">人工智能</Select.Option>
+                                    <Select.Option value="人机交互">人机交互</Select.Option>
+                                    <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
+                                </Select>
                             </Form.Item>
                         </Col>
                         <Col span={8}>
@@ -389,11 +557,11 @@ const JournalManage: React.FC = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Form.Item name="dblplink" label="DBLP链接">
+                    <Form.Item name="dblpLink" label="DBLP链接">
                         <Input />
                     </Form.Item>
 
-                    <Form.Item name="mainpagelink" label="主页链接">
+                    <Form.Item name="mainpageLink" label="主页链接">
                         <Input />
                     </Form.Item>
 
