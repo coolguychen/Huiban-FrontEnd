@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Conference } from "../../conference/conferenceType";
+import { Conference, EditConference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
-import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Table, message } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Switch, Table, message } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { } from '@ant-design/icons';
@@ -20,6 +20,8 @@ const ConferenceManage: React.FC = () => {
     console.log(userLogin)
     const token = userLogin.userInfo.data.token;
     const [conferences, setConferences] = useState<Conference[]>([]);
+
+    const [count, setCount] = useState(0)//负责页面更新
 
     /**获取全部会议 */
     useEffect(() => {
@@ -58,7 +60,7 @@ const ConferenceManage: React.FC = () => {
             .catch(error => {
                 console.log('Error', error.message);
             });
-    }, []);
+    }, [count]);
 
     //分页默认值，记得import useState
     const [pageOption, setPageOption] = useState({
@@ -118,10 +120,241 @@ const ConferenceManage: React.FC = () => {
 
     };
 
-    const handleEdit = () => {
-        console.log('弹出编辑的表单？');
+    /** 编辑会议 */
+    const [editConferenceForm, setEditConferenceForm] = useState(false);
+    interface CollectionEditFormProps {
+        open: boolean;
+        record: EditConference;
+        onCancel: () => void;
     }
 
+    const [editRecord, setEditRecord] = useState<EditConference>();
+
+
+    const EditConferenceForm: React.FC<CollectionEditFormProps> = ({
+        open,
+        record,
+        onCancel,
+    }) => {
+        const [form] = Form.useForm();
+
+        if (record) {
+            console.log(record)
+            form.setFieldsValue({
+                title: record.title,
+                fullTitle: record.fullTitle,
+                ccfRank: record.ccfRank,
+                sub: record.sub,
+                year: moment(record.year, 'YYYY'),
+                dblpLink: record.dblpLink,
+                mainpageLink: record.mainpageLink,
+                place: record.place,
+                abstractDeadline: moment(record.abstractDeadline, 'YYYY-MM-DD'), //摘要DDL
+                paperDeadline: moment(record.paperDeadline, 'YYYY-MM-DD'),//全文DDL
+                startTime: moment(record.startTime, 'YYYY-MM-DD'), //开始时间'
+                endTime: moment(record.endTime, 'YYYY-MM-DD'),  //结束时间
+                sessionNum: record.sessionNum,
+                topicDetails: record.topicDetails,
+                acceptedRate: record.acceptedRate,
+                postponed: record.isPostponed
+            })
+        }
+        return (
+            //用Modal弹出表单
+            <Modal
+                open={open} //是
+                title="修改用户信息"
+                okText="确定"
+                cancelText="取消"
+                onCancel={onCancel}
+                width={800}
+                onOk={() => {
+                    form
+                        .validateFields()
+                        .then((values) => {
+                            const year = values.year.year();
+                            console.log(year)
+                            values.year = year
+                            values.conferenceId = `${values.title}${values.year}`;
+
+                            console.log(values)
+                            form.resetFields();
+                            const apiUrl = 'http://124.220.14.106:9001/api/conferences/update'; // 会议信息更新接口
+                            console.log(values)
+                            axios.put(apiUrl, values, {
+                                headers: {
+                                    'Content-Type': 'application/json; charset=UTF-8',
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                                .then((response) => {
+                                    console.log(response)
+                                    if (response.status === 200) {
+                                        console.log(response)
+                                        message.success('修改成功！')
+                                        setEditConferenceForm(false);
+                                        setCount(count + 1)
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.log(err.message);
+                                    message.error('修改失败，请稍后再试！')
+                                });
+                        })
+                        .catch((info) => {
+                            console.log('Validate Failed:', info);
+                        });
+                }}
+            >
+                <Form form={form} layout="horizontal" name="form_in_modal"
+                >
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="year" label="年份" rules={[{ required: true }]}>
+                                <DatePicker picker="year" />
+                                {/* <Input /> */}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="sessionNum" label="届数" >
+                                <InputNumber min={0} />
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item name="ccfRank" label="CCF 排名" rules={[{ required: true, message: '请选择CCF排名' }]}>
+                                <Select>
+                                    <Option value="">请选择</Option>
+                                    <Option value="A">A</Option>
+                                    <Option value="B">B</Option>
+                                    <Option value="C">C</Option>
+                                    <Option value="null">NULL</Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="fullTitle" label="全称">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="dblpLink" label="DBLP链接">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="mainpageLink" label="主页链接">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="place" label="开会地址">
+                        <Input />
+                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="acceptedRate" label="接受率">
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="sub" label="类型">
+                                <Select>
+                                    <Select.Option value="DS">计算机架构/并行编程/存储技术</Select.Option>
+                                    <Select.Option value="NW">网络系统</Select.Option>
+                                    <Select.Option value="SC">网络与系统安全</Select.Option>
+                                    <Select.Option value="SE">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="DB">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="CT">计算理论</Select.Option>
+                                    <Select.Option value="CG">图形学</Select.Option>
+                                    <Select.Option value="AI">人工智能</Select.Option>
+                                    <Select.Option value="HI">人机交互</Select.Option>
+                                    <Select.Option value="MX">跨学科/混合/新兴领域</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="postponed" label="是否延期" valuePropName="checked">
+                        <Switch checkedChildren="是" unCheckedChildren="否" />
+                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="abstractDeadline" label="摘要截止时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="paperDeadline" label="论文截止时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item name="startTime" label="会议开始时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item name="endTime" label="会议结束时间">
+                                <DatePicker showTime />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="topicDetails" label="会议详情">
+                        <TextArea rows={5} />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    };
+
+    const handleEdit = (record) => {
+        console.log('弹出编辑的表单？');
+        console.log(record)
+        axios.get('http://124.220.14.106:9001/api/conferences/list/' + record.conferenceId + '/detail', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                let records = data.data;
+                console.log(records)
+                let conferenceTmp: EditConference = {
+                    conferenceId: records.conferenceId,
+                    title: records.conferenceId.substring(0, records.conferenceId.length - 4),
+                    fullTitle: records.fullTitle,
+                    ccfRank: records.ccfRank,
+                    sub: record.sub,
+                    year: records.conferenceId.substring(records.conferenceId.length - 4), //年份
+                    dblpLink: records.dblpLink,
+                    mainpageLink: records.mainpageLink,
+                    place: record.place,
+                    abstractDeadline: records.abstractDeadline, //摘要DDL
+                    paperDeadline: records.paperDeadline,//全文DDL
+                    startTime: records.startTime, //开始时间'
+                    endTime: records.endTime,  //结束时间
+                    followNum: records.followNum,
+                    attendNum: records.attendNum,
+                    sessionNum: records.sessionNum,
+                    topicDetails: records.topicDetails,
+                    acceptedRate: record.acceptedRate,
+                    isPostponed: records.postponed
+                };
+                setEditRecord(conferenceTmp)
+
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+
+        setEditConferenceForm(true)
+    }
+
+
+    /**增加会议 */
     const [form] = Form.useForm();
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -151,7 +384,7 @@ const ConferenceManage: React.FC = () => {
             }
         }).then(response => {
             console.log(response.data)
-            if (response.data.code == 200) {
+            if (response.data.code === 200) {
                 setIsModalVisible(false)
                 console.log('添加会议成功', response);
                 message.success('添加会议成功！')
@@ -386,7 +619,13 @@ const ConferenceManage: React.FC = () => {
             key: 'action',
             render: (text, record) => (
                 <Space>
-                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit()} />
+                    <EditConferenceForm
+                        open={editConferenceForm}
+                        record={editRecord}
+                        onCancel={() => {
+                            setEditConferenceForm(false);
+                        }} />
+                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit(record)} />
                     <Popconfirm
                         title="确定要删除吗？"
                         onConfirm={() => { handleDeleteConference(record) }} // 确定则调用删除的接口
@@ -471,10 +710,24 @@ const ConferenceManage: React.FC = () => {
                         </Col>
                         <Col span={12}>
                             <Form.Item name="sub" label="类型">
-                                <Input />
+                                <Select>
+                                    <Select.Option value="DS">计算机架构/并行编程/存储技术</Select.Option>
+                                    <Select.Option value="NW">网络系统</Select.Option>
+                                    <Select.Option value="SC">网络与系统安全</Select.Option>
+                                    <Select.Option value="SE">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="DB">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="CT">计算理论</Select.Option>
+                                    <Select.Option value="CG">图形学</Select.Option>
+                                    <Select.Option value="AI">人工智能</Select.Option>
+                                    <Select.Option value="HI">人机交互</Select.Option>
+                                    <Select.Option value="MX">跨学科/混合/新兴领域</Select.Option>
+                                </Select>
                             </Form.Item>
                         </Col>
                     </Row>
+                    <Form.Item name="postponed" label="是否延期" valuePropName="checked">
+                        <Switch checkedChildren="是" unCheckedChildren="否" />
+                    </Form.Item>
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item name="abstractDeadline" label="摘要截止时间">

@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef, message } from 'antd';
+import {
+    DeleteTwoTone,
+    EditTwoTone,
+    SearchOutlined,
+    MailOutlined,
+    ExclamationCircleFilled,
+    LockOutlined,
+
+} from '@ant-design/icons';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -48,6 +57,147 @@ const UserManage: React.FC = () => {
             });
     }, []);
 
+    // 管理员修改普通用户信息
+    // const [editUserForm, setEditUserForm] = useState(false);
+    // interface CollectionEditFormProps {
+    //     open: boolean;
+    //     record: User;
+    //     onCancel: () => void;
+    // }
+
+
+    // const [editRecord, setEditRecord] = useState<User>({ email: '', userName: '', institution: '', password: '' });
+    // const [count, setCount] = useState(0)//负责页面更新
+    // //修改用户的表单
+    // const EditUserForm: React.FC<CollectionEditFormProps> = ({
+    //     open,
+    //     record,
+    //     onCancel,
+    // }) => {
+    //     const [form] = Form.useForm();
+    //     // console.log(record)
+    //     //set field value
+    //     form.setFieldValue("email", record.email);
+    //     form.setFieldValue("userName", record.userName);
+    //     form.setFieldValue("institution", record.institution);
+    //     form.setFieldValue("password", record.password);
+    //     return (
+    //         //用Modal弹出表单
+    //         <Modal
+    //             open={open} //是
+    //             title="修改用户信息"
+    //             okText="确定"
+    //             cancelText="取消"
+    //             onCancel={onCancel}
+    //             onOk={() => {
+    //                 form
+    //                     .validateFields()
+    //                     .then((values) => {
+    //                         form.resetFields();
+    //                         const apiUrl = 'http://124.220.14.106:9001/api/users/update'; // 用户信息更新接口
+    //                         console.log(values)
+    //                         axios.put(apiUrl, {
+    //                             userName: values.userName,
+    //                             institution: values.institution,
+    //                             email: values.email
+    //                         }, {
+    //                             headers: {
+    //                                 'Content-Type': 'application/json; charset=UTF-8',
+    //                                 'Authorization': `Bearer ${token}`
+    //                             }
+    //                         })
+    //                             .then((response) => {
+    //                                 console.log(response)
+    //                                 if (response.status === 200) {
+    //                                     console.log(response)
+    //                                     message.success('修改成功！')
+    //                                     setEditUserForm(false);
+    //                                     setCount(count + 1)
+    //                                 }
+    //                             })
+
+    //                             .catch((err) => {
+    //                                 console.log(err.message);
+    //                                 message.error('修改失败，请稍后再试！')
+    //                             });
+    //                     })
+    //                     .catch((info) => {
+    //                         console.log('Validate Failed:', info);
+    //                     });
+    //             }}
+    //         >
+    //             <Form
+    //                 form={form}
+    //                 layout="vertical"
+    //                 name="form_in_modal"
+    //                 initialValues={{ modifier: 'public' }}
+    //             >
+    //                 {/* 填写邮箱 */}
+    //                 <Form.Item
+    //                     name="email"
+    //                     label="邮箱"
+    //                 >
+    //                     <Input prefix={<MailOutlined className="site-form-item-icon" />} disabled />
+    //                 </Form.Item>
+
+    //                 {/* 填写用户名 */}
+    //                 <Form.Item
+    //                     name="userName"
+    //                     label="📝用户名："
+    //                     rules={[{ required: true, message: '请输入用户名' }]}
+    //                 >
+    //                     <Input />
+    //                 </Form.Item>
+
+    //                 {/* 填写机构 */}
+    //                 <Form.Item
+    //                     name="institution"
+    //                     label="🏢科研机构"
+    //                     rules={[{ required: true, message: '请输入科研机构' }]}
+    //                 >
+    //                     <Input />
+    //                 </Form.Item>
+
+    //                 <Form.Item
+    //                     name="password"
+    //                     label="密码"
+    //                     rules={[
+    //                         { required: true, message: '请输入新密码!' },
+    //                         { min: 6, message: '密码至少为6位!' },
+
+    //                     ]}
+    //                     hasFeedback
+    //                 >
+    //                     <Input.Password />
+    //                 </Form.Item>
+
+    //                 <Form.Item
+    //                     name="confirmPassword"
+    //                     label="确认新密码"
+    //                     dependencies={['password']}
+    //                     hasFeedback
+    //                     rules={[
+    //                         {
+    //                             required: true,
+    //                             message: '请确认新密码!',
+    //                         },
+    //                         ({ getFieldValue }) => ({
+    //                             validator(_, value) {
+    //                                 if (!value || getFieldValue('password') === value) {
+    //                                     return Promise.resolve();
+    //                                 }
+    //                                 return Promise.reject(new Error('两次输入的密码不一致!'));
+    //                             },
+    //                         }),
+    //                     ]}
+    //                 >
+    //                     <Input.Password />
+    //                 </Form.Item>
+    //             </Form>
+    //         </Modal>
+    //     )
+    // };
+
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
     const userCols = [
@@ -60,7 +210,13 @@ const UserManage: React.FC = () => {
             align: 'center',
             render: (text, record) => (
                 <Space size="middle">
-                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit(record)} />
+                    {/* <EditUserForm
+                        open={editUserForm}
+                        record={editRecord}
+                        onCancel={() => {
+                            setEditUserForm(false);
+                        }} />
+                    <EditOutlined style={{ color: 'CornflowerBlue' }} onClick={() => handleEdit(record)} /> */}
                     <Popconfirm
                         title="确定要删除吗？"
                         onConfirm={() => { setDeleteModalVisible(true); handleDeleteUser(record) }} // 确定则调用删除的接口
@@ -74,10 +230,13 @@ const UserManage: React.FC = () => {
         },
     ];
 
-    const handleEdit = (record) => {
-        // Handle edit action
+    // const handleEdit = (record) => {
+    //     // Handle edit action
+    //     console.log(record)
+    //     setEditUserForm(true)
+    //     setEditRecord(record)
 
-    };
+    // };
 
     const handleDeleteUser = (record) => {
         // Handle delete action
