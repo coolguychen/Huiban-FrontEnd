@@ -11,53 +11,6 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { useForm } from "antd/es/form/Form";
 
-
-// const comments = [
-//     {
-//         id: 6,
-//         userName: "chm",
-//         imageUrl: "https://iconfont.alicdn.com/p/illus/preview_image/1SAIt26l6ecK/9dd5ffa2-becc-4088-9f34-e92e332e6186.png",
-//         commentTime: "2024-05-22T12:13:47.000+00:00",
-//         content: "审了7长3短，审CIKM工作量确实非常大，六月底一整周最主要的工作就是审CIKM了。\nbidding机制不清楚，每年都会分到一些和我相关性不大的文章，硬着头皮慢慢看，当做拓展知识了，不过有可能造成审稿质量下降的隐患。平均审稿质量看起来还可以，看得出大部分PC member是认真看了文章后才写的。个别也有不认真的审稿人review不专业，例如说说套话就拒，或者不了解领域盲目给高分，基本都在PC和SPC 的discussion中改善了。\n投稿质量，完全瞎投碰运气的稿子比较少。我是对所有文章都粗读一遍后，有个大致对比后再逐篇细读挑问题。大家都很会包装，以至于我第一轮读完，总体感觉每篇都有亮点。不过再细看每一篇，其实都有明显的逻辑漏洞，因为逻辑上的问题被拒不怨。总的来说，CIKM是个正经好会，要保证自己工作没有明显逻辑漏洞才有希望录用。",
-//         category: "conference",
-//         academicId: "date2023",
-//         parentId: undefined,
-//         replys: [],
-//         parentComment: null,
-//         parentUsername: null,
-//         parentImageUrl: null
-//     },
-//     // Add more comments as needed
-//     {
-//         id: 6,
-//         userName: "dzq",
-//         imageUrl: "https://iconfont.alicdn.com/p/illus/preview_image/1SAIt26l6ecK/9dd5ffa2-becc-4088-9f34-e92e332e6186.png",
-//         commentTime: "2024-05-22T12:13:47.000+00:00",
-//         content: "评分：1 -1 -1 \n今年可能是因为稿件量太大了，我遇到的审稿人质量比较差。1. 我做的是序列推荐，居然有一个审稿人要我和 CTR 的 Baseline 做对比，他还强调，不这样的话没有说服力…2. 还有一个审稿人，要求我加基线方法，然后挂了两个 arxiv 链接，都是23年6月的，CIKM六月都截稿了…审稿质量差的我心服口服…",
-//         category: "conference",
-//         academicId: "date2023",
-//         parentId: undefined,
-//         replys: [],
-//         parentComment: null,
-//         parentUsername: null,
-//         parentImageUrl: null
-//     },
-//     {
-//         id: 6,
-//         userName: "cyh",
-//         imageUrl: "https://iconfont.alicdn.com/p/illus/preview_image/1SAIt26l6ecK/9dd5ffa2-becc-4088-9f34-e92e332e6186.png",
-//         commentTime: "2024-05-22T12:13:47.000+00:00",
-//         content: "1 1 -1 long paper accept\n审稿意见还比较中肯\n坏消息是可能没法去现场，线下参会太贵了（太穷了）",
-//         category: "conference",
-//         academicId: "date2023",
-//         parentId: undefined,
-//         replys: [],
-//         parentComment: null,
-//         parentUsername: null,
-//         parentImageUrl: null
-//     },
-// ];
-
 type StarConference = {
     conferenceId: string,
     ccfRank: string
@@ -95,6 +48,7 @@ const ConferenceDetail: React.FC = () => {
         topicDetails: ""
     });
 
+
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [isAttended, setIsAttended] = useState(false); // 初始状态设为未参加
     const [followConferences, setFollowConferences] = useState<StarConference[]>([]);
@@ -119,12 +73,12 @@ const ConferenceDetail: React.FC = () => {
                 setFollowConferences(followConferences.filter(item => item != null))
                 // 判断是否已经收藏/参加了该会议
                 const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
-                console.log(conferenceInFollowList)
+                // console.log(conferenceInFollowList)
                 const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
-                console.log(conferenceInAttendList)
+                // console.log(conferenceInAttendList)
                 setIsFollowed(conferenceInFollowList);
                 setIsAttended(conferenceInAttendList);
-                return { conferenceInFollowList, conferenceInAttendList }
+                return conferenceInFollowList
             })
             .catch(error => {
                 console.log('Error', error.message);
@@ -136,12 +90,42 @@ const ConferenceDetail: React.FC = () => {
 
     useEffect(() => {
         console.log('更新前的状态:', isFollowed);
-        getStarList();
-        console.log('更新后的状态:', isFollowed);
+        // getStarList();
+         // 获取用户收藏的会议列表
+         axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                console.log(data.data);
+                let records = data.data;
+                console.log(records)
+                let followConferences: Conference[] = records.followConferences
+                let attendConferences: Conference[] = records.attendConferences
+                // 过滤掉 null 和 undefined
+                setFollowConferences(followConferences.filter(item => item != null))
+                // 判断是否已经收藏/参加了该会议
+                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
+                // console.log(conferenceInFollowList)
+                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
+                // console.log(conferenceInAttendList)
+                setIsFollowed(conferenceInFollowList);
+                setIsAttended(conferenceInAttendList);
+                console.log('更新后的状态:', isFollowed);
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+       
         // 设置延时执行获取会议详情
         getConferenceDetails();
         getComments();
-    }, [count]);
+    }, []);
 
     const getComments = () => {
         //获取评论列表

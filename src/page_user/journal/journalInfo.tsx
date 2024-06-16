@@ -173,7 +173,45 @@ const JournalInfo: React.FC = () => {
             dataIndex: 'sub',
             key: 'sub',
             align: 'center',
-
+            filters: [
+                {
+                    text: '网络系统',
+                    value: '网络系统',
+                },
+                {
+                    text: '网络与系统安全',
+                    value: '网络与系统安全',
+                },
+                {
+                    text: '软件工程/操作系统/程序设计语言',
+                    value: '软件工程/操作系统/程序设计语言',
+                },
+                {
+                    text: '数据库/数据挖掘/信息检索',
+                    value: '数据库/数据挖掘/信息检索',
+                },
+                {
+                    text: '计算理论',
+                    value: '计算理论',
+                },
+                {
+                    text: '图形学',
+                    value: '图形学',
+                },
+                {
+                    text: '人工智能',
+                    value: '人工智能',
+                },
+                {
+                    text: '人机交互',
+                    value: '人机交互',
+                },
+                {
+                    text: '跨学科/混合/新兴领域',
+                    value: '跨学科/混合/新兴领域',
+                },
+            ],
+            onFilter: (value, record) => record.sub === value,
         },
         {
             title: '🏆CCF',
@@ -224,13 +262,15 @@ const JournalInfo: React.FC = () => {
             title: '🎯影响因子',
             dataIndex: 'impactFactor',
             key: 'impactFactor',
-            align: 'center'
+            align: 'center',
+            sorter: (a, b) => a.impactFactor - b.impactFactor,
         },
         {
             title: '🪄引用分数',
             dataIndex: 'citeScore',
             key: 'citeScore',
-            align: 'center'
+            align: 'center',
+            sorter: (a, b) => a.citeScore - b.citeScore,
         },
         {
             title: '📚出版社',

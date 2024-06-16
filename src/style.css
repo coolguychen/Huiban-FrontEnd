@@ -351,6 +351,12 @@ body {
 
 /*详细页*/
 
+.filter-right {
+  float: right; /* 使筛选框浮动到右侧 */
+  margin-left: auto; /* 将左侧边距设为自动，右侧边距设为0，实现右对齐 */
+  margin-bottom: 16px; /* 添加底部外边距 */
+}
+
 /*详情信息*/
 .detail-card {
   background-color: rgba(249, 249, 249, 0.5);

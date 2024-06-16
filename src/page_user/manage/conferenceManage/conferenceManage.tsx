@@ -374,12 +374,10 @@ const ConferenceManage: React.FC = () => {
         // 从ISO日期字符串中提取年份
         const year = values.year.year();
         console.log(year)
-        values.title = values.conferenceId
-        if (values.conferenceId && values.year !== undefined) {
+        if (values.title && values.year !== undefined) {
             values.year = year
-            values.conferenceId = `${values.conferenceId}${values.year}`;
+            values.conferenceId = `${values.title}${values.year}`;
         }
-        // onCreate(values);
         // 使用axios发送POST请求
         axios.post('http://124.220.14.106:9001/api/conferences', values, {
             headers: {
@@ -668,7 +666,7 @@ const ConferenceManage: React.FC = () => {
                 <Form form={form} layout="vertical">
                     <Row gutter={16}>
                         <Col span={6}>
-                            <Form.Item name="conferenceId" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
+                            <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
                                 <Input />
                             </Form.Item>
                         </Col>

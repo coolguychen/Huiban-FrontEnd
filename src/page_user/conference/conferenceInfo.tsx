@@ -1,6 +1,6 @@
 //TODO： 展示全部CCF会议
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, InputRef, Space, Button, Table } from 'antd';
+import { Input, InputRef, Space, Button, Table, Form, DatePicker } from 'antd';
 import { Conference } from './conferenceType'
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
@@ -293,10 +293,64 @@ const ConferenceInfo: React.FC = () => {
         }
     ];
 
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+    // 假设的筛选函数
+    const filterData = (start, end) => {
+        return conferences.filter(item => {
+            const startTime = new Date(item.startTime)
+            const endTime = new Date(item.endTime)
+            // console.log(startTime)
+            // console.log(endTime)
+            return (
+                (!start || startTime >= start) &&
+                (!end || endTime <= end)
+            );
+        });
+    };
+
+    // 处理日期变化
+    const handleDateChange = (field, value) => {
+        console.log(value)
+        if (field === 'startDate') {
+            setStartDate(value);
+            console.log(value)
+        } else if (field === 'endDate') {
+            setEndDate(value);
+            console.log(endDate)
+
+        }
+        // 重新筛选数据
+        const filteredData = filterData(startDate, endDate);
+        setConferences(filteredData);
+    };
+
     return (
         <div>
             <h3 className='info'>CCF Conferences</h3>
-            <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
+            <div>
+                <Form className='filter-right' layout="inline">
+                    <Form.Item label="开始时间">
+                        <DatePicker
+                            value={startDate}
+                            onChange={(value) => handleDateChange('startDate', value)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="结束时间">
+                        <DatePicker
+                            value={endDate}
+                            onChange={(value) => handleDateChange('endDate', value)}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" onClick={() => setConferences(filterData(startDate, endDate))}>
+                            筛选
+                        </Button>
+                    </Form.Item>
+                </Form>
+                <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />            </div>
+            {/* <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} /> */}
         </div>
     );
 }
