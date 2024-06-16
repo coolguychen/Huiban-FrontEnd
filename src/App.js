@@ -64,7 +64,7 @@ function App() {
 						<Route path='/user' element={userInfo ? <UserInfo /> : <Login />} />
 					</Routes>}
 			</div>
-			<Footer />
+			{/* <Footer /> */}
 		</BrowserRouter>
 	);
 }

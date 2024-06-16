@@ -98,46 +98,46 @@ const ConferenceDetail: React.FC = () => {
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [isAttended, setIsAttended] = useState(false); // 初始状态设为未参加
     const [followConferences, setFollowConferences] = useState<StarConference[]>([]);
-    // const getStarList = () => {
-    //     // 获取用户收藏的会议列表
-    //     axios.get('http://124.220.14.106:9001/api/users/info', {
-    //         headers: {
-    //             'Content-type': 'application/json; charset=UTF-8',
-    //             'Authorization': "Bearer " + token
-    //         },
-    //     })
-    //         .then(response => {
-    //             console.log(response);
-    //             let data = response.data;
-    //             console.log(data)
-    //             console.log(data.data);
-    //             let records = data.data;
-    //             console.log(records)
-    //             let followConferences: Conference[] = records.followConferences
-    //             let attendConferences: Conference[] = records.attendConferences
-    //             // 过滤掉 null 和 undefined
-    //             setFollowConferences(followConferences.filter(item => item != null))
-    //             // 判断是否已经收藏/参加了该会议
-    //             const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
-    //             console.log(conferenceInFollowList)
-    //             const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
-    //             console.log(conferenceInAttendList)
-    //             setIsFollowed(conferenceInFollowList);
-    //             setIsAttended(conferenceInAttendList);
-    //             return { conferenceInFollowList, conferenceInAttendList }
-    //         })
-    //         .catch(error => {
-    //             console.log('Error', error.message);
-    //         });
-    // }
+    const getStarList = () => {
+        // 获取用户收藏的会议列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                console.log(data.data);
+                let records = data.data;
+                console.log(records)
+                let followConferences: Conference[] = records.followConferences
+                let attendConferences: Conference[] = records.attendConferences
+                // 过滤掉 null 和 undefined
+                setFollowConferences(followConferences.filter(item => item != null))
+                // 判断是否已经收藏/参加了该会议
+                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
+                console.log(conferenceInFollowList)
+                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
+                console.log(conferenceInAttendList)
+                setIsFollowed(conferenceInFollowList);
+                setIsAttended(conferenceInAttendList);
+                return { conferenceInFollowList, conferenceInAttendList }
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }
 
     // 表示本页的会议
     const [thisConference, setThisConference] = useState<StarConference>({ conferenceId: "", ccfRank: "" });
 
     useEffect(() => {
-        // console.log('更新前的状态:', isFollowed);
-        // getStarList();
-        // console.log('更新后的状态:', isFollowed);
+        console.log('更新前的状态:', isFollowed);
+        getStarList();
+        console.log('更新后的状态:', isFollowed);
         // 设置延时执行获取会议详情
         getConferenceDetails();
         getComments();
@@ -382,8 +382,10 @@ const ConferenceDetail: React.FC = () => {
         <div className="flex-container">
             <div className="left-sidebar">
 
+
                 <div className="detail-card">
-                    <h2>{conferenceDetail.fullTitle}</h2>
+                    <h2>{conferenceDetail.conferenceId}：{conferenceDetail.fullTitle}</h2>
+                    <p>💡 dblp: <a href={conferenceDetail.dblpLink} target="_blank">{conferenceDetail.dblpLink}</a></p>
                     <p>💡 会议主页：<a href={conferenceDetail.mainpageLink} target="_blank">{conferenceDetail.mainpageLink}</a></p>
                     <p>⏱️ 摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)} </p>
                     <p>⏱️ 全文截稿日期: {formatDate(conferenceDetail.paperDeadline)} </p>
