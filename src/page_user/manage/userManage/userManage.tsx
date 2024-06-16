@@ -282,13 +282,17 @@ const UserManage: React.FC = () => {
     };
 
     const handleSubmit = (values) => {
-        //默认图片地址
+        //角色属性
+        const roleValue = values.role
+        //加上默认图片地址
         values.imageUrl = "https://iconfont.alicdn.com/p/illus/preview_image/1SAIt26l6ecK/762012e7-e856-46b2-95f1-3abf4a83c560.png";
+        // 列表为空
         values.followConferences = []
         values.followJournals = []
         values.attendConferences = []
+        delete values.role //去掉values中的role属性
         console.log(values)
-        axios.post('http://124.220.14.106:9001/api/users', values, {
+        axios.post('http://124.220.14.106:9001/api/users?role=' + roleValue,  values, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}` // 假设你的API使用Bearer token
@@ -297,9 +301,13 @@ const UserManage: React.FC = () => {
             console.log(response.data)
             if (response.data.code == 200) {
                 setIsModalVisible(false)
-                console.log('添加用户成功', response);
-                message.success("添加用户成功！")
-                // 更新关注列表，添加的会议
+                if(roleValue === 'ROLE_ADMIN') {
+                    message.success("添加管理员成功！")
+                }
+                else{
+                    message.success("添加用户成功！")
+                }
+                // 更新用户列表
                 setUsers(prevUser => [...prevUser, values]);
             }
             else {
@@ -348,6 +356,13 @@ const UserManage: React.FC = () => {
                     </Form.Item>
                     <Form.Item name="institution" label="科研机构">
                         <Input />
+                    </Form.Item>
+                    {/* 添加下拉选择项 */}
+                    <Form.Item name="role" label="选择角色" rules={[{required:true, message:'请选择角色！'}]}>
+                        <Select>
+                            <Select.Option value="ROLE_ADMIN">管理员</Select.Option>
+                            <Select.Option value="ROLE_USER">用户</Select.Option>
+                        </Select>
                     </Form.Item>
                 </Form>
             </Modal>

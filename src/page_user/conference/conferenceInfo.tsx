@@ -184,7 +184,7 @@ const ConferenceInfo: React.FC = () => {
             key: 'fullTitle',
             align: 'center',
             ...getColumnSearchProps('fullTitle'), // 添加搜索
-            render: (text, record) => <a href={record.mainpageLink}>{text}</a> //点击全称 跳转到主页
+            render: (text, record) => <a href={record.mainpageLink} target='_blank'>{text}</a> //点击全称 跳转到主页
         },
         {
             title: '🏷️类型',
@@ -268,7 +268,7 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'startTime',
             key: 'startTime',
             align: 'center',
-            render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
+            render: (date) => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>,
         },
         {
             title: '📆结束时间',
@@ -294,7 +294,6 @@ const ConferenceInfo: React.FC = () => {
     ];
 
     return (
-
         <div>
             <h3 className='info'>CCF Conferences</h3>
             <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
