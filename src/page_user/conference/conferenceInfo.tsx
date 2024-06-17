@@ -1,6 +1,6 @@
 //TODO： 展示全部CCF会议
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, InputRef, Space, Button, Table, Form, DatePicker } from 'antd';
+import { Input, InputRef, Space, Button, Table, Form, DatePicker, message } from 'antd';
 import { Conference } from './conferenceType'
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
@@ -310,16 +310,25 @@ const ConferenceInfo: React.FC = () => {
         });
     };
 
-    // 处理日期变化
-    const handleDateChange = (field, value) => {
-        console.log(value)
-        if (field === 'startDate') {
-            setStartDate(value);
-            console.log(value)
-        } else if (field === 'endDate') {
-            setEndDate(value);
-            console.log(endDate)
 
+    const handleDateChange = (field, value) => {
+        console.log(value);
+        let newDate = value; // 将日期字符串转换为Date对象
+        // 检查日期有效性
+        if (field === 'startDate') {
+            if (endDate && newDate >= endDate) {
+                alert('结束日期不能小于开始日期！');
+                return; // 如果开始日期大于结束日期，不更新状态并退出函数
+            }
+            setStartDate(value);
+            console.log(value);
+        } else if (field === 'endDate') {
+            if (newDate < startDate) {
+                message.error('结束日期不能小于开始日期！');
+                return;
+            }
+            setEndDate(value);
+            console.log(endDate);
         }
         // 重新筛选数据
         const filteredData = filterData(startDate, endDate);

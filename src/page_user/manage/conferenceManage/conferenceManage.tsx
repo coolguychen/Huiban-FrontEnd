@@ -642,6 +642,63 @@ const ConferenceManage: React.FC = () => {
             ),
         },
     ];
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+    // 假设的筛选函数
+    const filterData = (start, end) => {
+        return conferences.filter(item => {
+            const startTime = new Date(item.startTime)
+            const endTime = new Date(item.endTime)
+            // console.log(startTime)
+            // console.log(endTime)
+            return (
+                (!start || startTime >= start) &&
+                (!end || endTime <= end)
+            );
+        });
+    };
+
+    // 处理日期变化
+    // const handleDateChange = (field, value) => {
+    //     console.log(value)
+    //     if (field === 'startDate') {
+    //         setStartDate(value);
+    //         console.log(value)
+    //     } else if (field === 'endDate') {
+    //         setEndDate(value);
+    //         console.log(endDate)
+
+    //     }
+    //     // 重新筛选数据
+    //     const filteredData = filterData(startDate, endDate);
+    //     setConferences(filteredData);
+    // };
+
+
+    const handleDateChange = (field, value) => {
+        console.log(value);
+        let newDate = value; // 将日期字符串转换为Date对象
+        // 检查日期有效性
+        if (field === 'startDate') {
+            if (endDate && newDate >= endDate) {
+                alert('结束日期不能小于开始日期！');
+                return; // 如果开始日期大于结束日期，不更新状态并退出函数
+            }
+            setStartDate(value);
+            console.log(value);
+        } else if (field === 'endDate') {
+            if (newDate < startDate) {
+                message.error('结束日期不能小于开始日期！');
+                return;
+            }
+            setEndDate(value);
+            console.log(endDate);
+        }
+        // 重新筛选数据
+        const filteredData = filterData(startDate, endDate);
+        setConferences(filteredData);
+    };
 
     return (
         <div>
@@ -759,8 +816,30 @@ const ConferenceManage: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
+            <div>
+                <Form className='filter-right' layout="inline">
+                    <Form.Item label="开始时间">
+                        <DatePicker
+                            value={startDate}
+                            onChange={(value) => handleDateChange('startDate', value)}
+                        />
+                    </Form.Item>
+                    <Form.Item label="结束时间">
+                        <DatePicker
+                            value={endDate}
+                            onChange={(value) => handleDateChange('endDate', value)}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" onClick={() => setConferences(filterData(startDate, endDate))}>
+                            筛选
+                        </Button>
+                    </Form.Item>
+                </Form>
+                <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />            </div>
+            {/* <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} /> */}
         </div>
+        // <Table columns={conferenceCols} dataSource={conferences} style={{ margin: 16 }} pagination={paginationProps} />
     )
 }
 

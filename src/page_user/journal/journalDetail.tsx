@@ -299,11 +299,15 @@ const JournalDetail: React.FC = () => {
                     💭评论
                 </div>
                 <div className="comment-area">
-                    <List
-                        itemLayout="horizontal"
-                        dataSource={comments}
-                        renderItem={comment => <SingleComment comment={comment} />}
-                    />
+                    {comments.length > 0 ? (
+                        <List
+                            itemLayout="horizontal"
+                            dataSource={comments}
+                            renderItem={comment => <SingleComment comment={comment} />}
+                        />
+                    ) : (
+                        <p>当前暂无评论</p>
+                    )}
                 </div>
                 {getRole() === 'admin' ?
                     <div className="comment-input">

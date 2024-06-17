@@ -144,7 +144,7 @@ const UserManage: React.FC = () => {
                     {/* 填写邮箱 */}
                     <Form.Item
                         name="email"
-                        label="邮箱"
+                        label="📮邮箱"
                     >
                         <Input prefix={<MailOutlined className="site-form-item-icon" />} disabled />
                     </Form.Item>
@@ -202,8 +202,6 @@ const UserManage: React.FC = () => {
             ),
         },
     ];
-
-
 
     const handleDeleteUser = (record) => {
         // Handle delete action
