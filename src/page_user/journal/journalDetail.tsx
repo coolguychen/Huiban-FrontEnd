@@ -66,6 +66,7 @@ const JournalDetail: React.FC = () => {
 
 
     useEffect(() => {
+        getStarList();
         getComments();
         // 获取期刊详情
         axios.get('http://124.220.14.106:9001/api/journals/list/' + id + '/detail', {
@@ -102,9 +103,7 @@ const JournalDetail: React.FC = () => {
             .catch(error => {
                 console.log('Error', error.message);
             });
-
-        getStarList();
-    }, [count]);
+    }, []);
 
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [followJournals, setFollowJournals] = useState<StarJournal[]>([]);

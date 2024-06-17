@@ -91,14 +91,14 @@ const ConferenceDetail: React.FC = () => {
     useEffect(() => {
         console.log('更新前的状态:', isFollowed);
         // getStarList();
-         // 获取用户收藏的会议列表
-         axios.get('http://124.220.14.106:9001/api/users/info', {
+        // 获取用户收藏的会议列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
                 'Authorization': "Bearer " + token
             },
         })
-            .then(response => {
+            .then(async response => {
                 console.log(response);
                 let data = response.data;
                 console.log(data)
@@ -108,20 +108,26 @@ const ConferenceDetail: React.FC = () => {
                 let followConferences: Conference[] = records.followConferences
                 let attendConferences: Conference[] = records.attendConferences
                 // 过滤掉 null 和 undefined
-                setFollowConferences(followConferences.filter(item => item != null))
+                // setFollowConferences(followConferences.filter(item => item != null))
                 // 判断是否已经收藏/参加了该会议
-                const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
+                // const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
                 // console.log(conferenceInFollowList)
-                const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
+                // const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
                 // console.log(conferenceInAttendList)
-                setIsFollowed(conferenceInFollowList);
-                setIsAttended(conferenceInAttendList);
+                // setIsFollowed(conferenceInFollowList);
+                // setIsAttended(conferenceInAttendList);
                 console.log('更新后的状态:', isFollowed);
+
+                // 使用 await 更新状态，这样你可以确保状态是最新的
+                await Promise.all([
+                    setFollowConferences(followConferences.filter(item => item != null)),
+                    setIsFollowed(followConferences.some(conference => conference.conferenceId === id)),
+                    setIsAttended(attendConferences.some(conference => conference.conferenceId === id)),
+                ]);
             })
             .catch(error => {
                 console.log('Error', error.message);
             });
-       
         // 设置延时执行获取会议详情
         getConferenceDetails();
         getComments();
