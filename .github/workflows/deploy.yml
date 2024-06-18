@@ -3,7 +3,7 @@ name: Deploy React App to Server
 on:
   push:
     branches:
-      - main  # 仅在推送到main分支时触发
+      - master  # 仅在推送到master分支时触发
 
 jobs:
   deploy:
