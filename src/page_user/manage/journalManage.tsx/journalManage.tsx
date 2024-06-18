@@ -197,36 +197,40 @@ const JournalManage: React.FC = () => {
             align: 'center',
             filters: [
                 {
-                    text: '网络系统',
-                    value: '网络系统',
+                    text: '计算机体系结构/并行与分布计算/存储系统',
+                    value: '计算机体系结构/并行与分布计算/存储系统'
                 },
                 {
-                    text: '网络与系统安全',
-                    value: '网络与系统安全',
+                    text: '计算机网络',
+                    value: '计算机网络',
                 },
                 {
-                    text: '软件工程/操作系统/程序设计语言',
-                    value: '软件工程/操作系统/程序设计语言',
+                    text: '网络与信息安全',
+                    value: '网络与信息安全',
+                },
+                {
+                    text: '软件工程/系统软件/程序设计语言',
+                    value: '软件工程/系统软件/程序设计语言',
                 },
                 {
                     text: '数据库/数据挖掘/信息检索',
                     value: '数据库/数据挖掘/信息检索',
                 },
                 {
-                    text: '计算理论',
-                    value: '计算理论',
+                    text: '计算机科学理论',
+                    value: '计算机科学理论',
                 },
                 {
-                    text: '图形学',
-                    value: '图形学',
+                    text: '计算机图形学与多媒体',
+                    value: '计算机图形学与多媒体',
                 },
                 {
                     text: '人工智能',
                     value: '人工智能',
                 },
                 {
-                    text: '人机交互',
-                    value: '人机交互',
+                    text: '人机交互与普适计算',
+                    value: '人机交互与普适计算',
                 },
                 {
                     text: '跨学科/混合/新兴领域',
@@ -389,7 +393,7 @@ const JournalManage: React.FC = () => {
             //用Modal弹出表单
             <Modal
                 open={open} //是
-                title="修改用户信息"
+                title="修改期刊信息"
                 okText="确定"
                 cancelText="取消"
                 onCancel={onCancel}
@@ -449,15 +453,15 @@ const JournalManage: React.FC = () => {
                         <Col span={8}>
                             <Form.Item name="sub" label="类型">
                                 <Select>
-                                    <Select.Option value="计算机架构/并行编程/存储技术">计算机架构/并行编程/存储技术</Select.Option>
-                                    <Select.Option value="网络系统">网络系统</Select.Option>
-                                    <Select.Option value="网络与系统安全">网络与系统安全</Select.Option>
-                                    <Select.Option value="软件工程/操作系统/程序设计语言">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="计算机体系结构/并行与分布计算/存储系统">计算机体系结构/并行与分布计算/存储系统</Select.Option>
+                                    <Select.Option value="计算机网络">计算机网络</Select.Option>
+                                    <Select.Option value="网络与信息安全">网络与信息安全</Select.Option>
+                                    <Select.Option value="软件工程/系统软件/程序设计语言">软件工程/系统软件/程序设计语言</Select.Option>
                                     <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
-                                    <Select.Option value="计算理论">计算理论</Select.Option>
-                                    <Select.Option value="图形学">图形学</Select.Option>
+                                    <Select.Option value="计算机科学理论">计算机科学理论</Select.Option>
+                                    <Select.Option value="计算机图形学与多媒体">计算机图形学与多媒体</Select.Option>
                                     <Select.Option value="人工智能">人工智能</Select.Option>
-                                    <Select.Option value="人机交互">人机交互</Select.Option>
+                                    <Select.Option value="人机交互与普适计算">人机交互与普适计算</Select.Option>
                                     <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
                                 </Select>
                             </Form.Item>
@@ -563,9 +567,10 @@ const JournalManage: React.FC = () => {
                         });
                 }}
                 onCancel={handleCancel}
+                width={800}
             >
                 {/* Your meeting form component goes here */}
-                <Form form={form} layout="vertical">
+                <Form form={form} layout="horizontal">
                     <Form.Item name="journalId" label="期刊名称" rules={[{ required: true, message: '请输入期刊标题' }]}>
                         <Input />
                     </Form.Item>
@@ -584,15 +589,15 @@ const JournalManage: React.FC = () => {
                         <Col span={8}>
                             <Form.Item name="sub" label="类型">
                                 <Select>
-                                    <Select.Option value="计算机架构/并行编程/存储技术">计算机架构/并行编程/存储技术</Select.Option>
-                                    <Select.Option value="网络系统">网络系统</Select.Option>
-                                    <Select.Option value="网络与系统安全">网络与系统安全</Select.Option>
-                                    <Select.Option value="软件工程/操作系统/程序设计语言">软件工程/操作系统/程序设计语言</Select.Option>
+                                    <Select.Option value="计算机体系结构/并行与分布计算/存储系统">计算机体系结构/并行与分布计算/存储系统</Select.Option>
+                                    <Select.Option value="计算机网络">计算机网络</Select.Option>
+                                    <Select.Option value="网络与信息安全">网络与信息安全</Select.Option>
+                                    <Select.Option value="软件工程/系统软件/程序设计语言">软件工程/系统软件/程序设计语言</Select.Option>
                                     <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
-                                    <Select.Option value="计算理论">计算理论</Select.Option>
-                                    <Select.Option value="图形学">图形学</Select.Option>
+                                    <Select.Option value="计算机科学理论">计算机科学理论</Select.Option>
+                                    <Select.Option value="计算机图形学与多媒体">计算机图形学与多媒体</Select.Option>
                                     <Select.Option value="人工智能">人工智能</Select.Option>
-                                    <Select.Option value="人机交互">人机交互</Select.Option>
+                                    <Select.Option value="人机交互与普适计算">人机交互与普适计算</Select.Option>
                                     <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
                                 </Select>
                             </Form.Item>

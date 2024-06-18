@@ -164,7 +164,7 @@ const ConferenceManage: React.FC = () => {
             //用Modal弹出表单
             <Modal
                 open={open} //是
-                title="修改用户信息"
+                title="修改会议信息"
                 okText="确定"
                 cancelText="取消"
                 onCancel={onCancel}
@@ -262,16 +262,16 @@ const ConferenceManage: React.FC = () => {
                         <Col span={12}>
                             <Form.Item name="sub" label="类型">
                                 <Select>
-                                    <Select.Option value="DS">计算机架构/并行编程/存储技术</Select.Option>
-                                    <Select.Option value="NW">网络系统</Select.Option>
-                                    <Select.Option value="SC">网络与系统安全</Select.Option>
-                                    <Select.Option value="SE">软件工程/操作系统/程序设计语言</Select.Option>
-                                    <Select.Option value="DB">数据库/数据挖掘/信息检索</Select.Option>
-                                    <Select.Option value="CT">计算理论</Select.Option>
-                                    <Select.Option value="CG">图形学</Select.Option>
-                                    <Select.Option value="AI">人工智能</Select.Option>
-                                    <Select.Option value="HI">人机交互</Select.Option>
-                                    <Select.Option value="MX">跨学科/混合/新兴领域</Select.Option>
+                                    <Select.Option value="计算机体系结构/并行与分布计算/存储系统">计算机体系结构/并行与分布计算/存储系统</Select.Option>
+                                    <Select.Option value="计算机网络">计算机网络</Select.Option>
+                                    <Select.Option value="网络与信息安全">网络与信息安全</Select.Option>
+                                    <Select.Option value="软件工程/系统软件/程序设计语言">软件工程/系统软件/程序设计语言</Select.Option>
+                                    <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="计算机科学理论">计算机科学理论</Select.Option>
+                                    <Select.Option value="计算机图形学与多媒体">计算机图形学与多媒体</Select.Option>
+                                    <Select.Option value="人工智能">人工智能</Select.Option>
+                                    <Select.Option value="人机交互与普适计算">人机交互与普适计算</Select.Option>
+                                    <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -494,6 +494,49 @@ const ConferenceManage: React.FC = () => {
             dataIndex: 'sub',
             key: 'sub',
             align: 'center',
+            filters: [
+                {
+                    text: '计算机体系结构/并行与分布计算/存储系统',
+                    value: '计算机体系结构/并行与分布计算/存储系统'
+                },
+                {
+                    text: '计算机网络',
+                    value: '计算机网络',
+                },
+                {
+                    text: '网络与信息安全',
+                    value: '网络与信息安全',
+                },
+                {
+                    text: '软件工程/系统软件/程序设计语言',
+                    value: '软件工程/系统软件/程序设计语言',
+                },
+                {
+                    text: '数据库/数据挖掘/信息检索',
+                    value: '数据库/数据挖掘/信息检索',
+                },
+                {
+                    text: '计算机科学理论',
+                    value: '计算机科学理论',
+                },
+                {
+                    text: '计算机图形学与多媒体',
+                    value: '计算机图形学与多媒体',
+                },
+                {
+                    text: '人工智能',
+                    value: '人工智能',
+                },
+                {
+                    text: '人机交互与普适计算',
+                    value: '人机交互与普适计算',
+                },
+                {
+                    text: '跨学科/混合/新兴领域',
+                    value: '跨学科/混合/新兴领域',
+                },
+            ],
+            onFilter: (value, record) => record.sub === value,
         },
         {
             title: '🏆CCF',
@@ -712,8 +755,9 @@ const ConferenceManage: React.FC = () => {
                         });
                 }}
                 onCancel={handleCancel}
+                width={800}
             >
-                <Form form={form} layout="vertical">
+                <Form form={form} layout="horizontal">
                     <Row gutter={16}>
                         <Col span={6}>
                             <Form.Item name="title" label="简称" rules={[{ required: true, message: '请输入会议标题' }]}>
@@ -763,16 +807,16 @@ const ConferenceManage: React.FC = () => {
                         <Col span={12}>
                             <Form.Item name="sub" label="类型">
                                 <Select>
-                                    <Select.Option value="DS">计算机架构/并行编程/存储技术</Select.Option>
-                                    <Select.Option value="NW">网络系统</Select.Option>
-                                    <Select.Option value="SC">网络与系统安全</Select.Option>
-                                    <Select.Option value="SE">软件工程/操作系统/程序设计语言</Select.Option>
-                                    <Select.Option value="DB">数据库/数据挖掘/信息检索</Select.Option>
-                                    <Select.Option value="CT">计算理论</Select.Option>
-                                    <Select.Option value="CG">图形学</Select.Option>
-                                    <Select.Option value="AI">人工智能</Select.Option>
-                                    <Select.Option value="HI">人机交互</Select.Option>
-                                    <Select.Option value="MX">跨学科/混合/新兴领域</Select.Option>
+                                    <Select.Option value="计算机体系结构/并行与分布计算/存储系统">计算机体系结构/并行与分布计算/存储系统</Select.Option>
+                                    <Select.Option value="计算机网络">计算机网络</Select.Option>
+                                    <Select.Option value="网络与信息安全">网络与信息安全</Select.Option>
+                                    <Select.Option value="软件工程/系统软件/程序设计语言">软件工程/系统软件/程序设计语言</Select.Option>
+                                    <Select.Option value="数据库/数据挖掘/信息检索">数据库/数据挖掘/信息检索</Select.Option>
+                                    <Select.Option value="计算机科学理论">计算机科学理论</Select.Option>
+                                    <Select.Option value="计算机图形学与多媒体">计算机图形学与多媒体</Select.Option>
+                                    <Select.Option value="人工智能">人工智能</Select.Option>
+                                    <Select.Option value="人机交互与普适计算">人机交互与普适计算</Select.Option>
+                                    <Select.Option value="跨学科/混合/新兴领域">跨学科/混合/新兴领域</Select.Option>
                                 </Select>
                             </Form.Item>
                         </Col>
