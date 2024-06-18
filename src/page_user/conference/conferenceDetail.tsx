@@ -107,17 +107,7 @@ const ConferenceDetail: React.FC = () => {
                 console.log(records)
                 let followConferences: Conference[] = records.followConferences
                 let attendConferences: Conference[] = records.attendConferences
-                // 过滤掉 null 和 undefined
-                // setFollowConferences(followConferences.filter(item => item != null))
-                // 判断是否已经收藏/参加了该会议
-                // const conferenceInFollowList = followConferences.some(conference => conference.conferenceId === id);
-                // console.log(conferenceInFollowList)
-                // const conferenceInAttendList = attendConferences.some(conference => conference.conferenceId === id);
-                // console.log(conferenceInAttendList)
-                // setIsFollowed(conferenceInFollowList);
-                // setIsAttended(conferenceInAttendList);
                 console.log('更新后的状态:', isFollowed);
-
                 // 使用 await 更新状态，这样你可以确保状态是最新的
                 await Promise.all([
                     setFollowConferences(followConferences.filter(item => item != null)),
@@ -371,17 +361,15 @@ const ConferenceDetail: React.FC = () => {
     return (
         <div className="flex-container">
             <div className="left-sidebar">
-
-
                 <div className="detail-card">
                     <h2>{conferenceDetail.conferenceId}：{conferenceDetail.fullTitle}</h2>
-                    <p>💡 dblp: <a href={conferenceDetail.dblpLink} target="_blank">{conferenceDetail.dblpLink}</a></p>
+                    {conferenceDetail.dblpLink ? <p>💡 dblp: <a href={conferenceDetail.dblpLink} target="_blank">{conferenceDetail.dblpLink}</a></p> : ''}
                     <p>💡 会议主页：<a href={conferenceDetail.mainpageLink} target="_blank">{conferenceDetail.mainpageLink}</a></p>
-                    <p>⏱️ 摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)} </p>
-                    <p>⏱️ 全文截稿日期: {formatDate(conferenceDetail.paperDeadline)} </p>
-                    <p>📅 会议开始日期: {formatDate(conferenceDetail.startTime)} </p>
-                    <p>📆 会议结束日期: {formatDate(conferenceDetail.startTime)} </p>
-                    <p>🎯 届数: {conferenceDetail.sessionNum} </p>
+                    {conferenceDetail.abstractDeadline ? <p>⏱️ 摘要截稿日期: {formatDate(conferenceDetail.abstractDeadline)}</p> : ''}
+                    {conferenceDetail.paperDeadline ? <p>⏱️ 全文截稿日期: {formatDate(conferenceDetail.paperDeadline)}</p> : ''}
+                    {conferenceDetail.startTime ? <p>📅 会议开始日期: {formatDate(conferenceDetail.startTime)}</p> : ''}
+                    {conferenceDetail.endTime ? <p>📆 会议结束日期: {formatDate(conferenceDetail.endTime)} </p> : ''}
+                    {conferenceDetail.sessionNum ? <p>🎯 届数: {conferenceDetail.sessionNum} </p> : ''}
                     <p> 🏆 CCF: <span style={{ backgroundColor: 'gold', padding: '5px', borderRadius: '5px', marginRight: '10px' }}>{conferenceDetail.ccfRank}</span> {" "}
                         <span style={{ marginRight: '10px' }}>🌟 关注: {conferenceDetail.followNum} </span>
                         ✈️ 参加: {conferenceDetail.attendNum}</p>

@@ -1,7 +1,6 @@
 //期刊详情页面
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, List, Modal, Table, message } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { UserComment, SingleComment } from "../conference/commentType.tsx";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -18,7 +17,6 @@ type StarJournal = {
 
 
 const JournalDetail: React.FC = () => {
-
     const { id } = useParams(); // 获取路由参数
     console.log(id)
     const userLogin = useSelector((state: any) => state.userLogin)
@@ -27,6 +25,9 @@ const JournalDetail: React.FC = () => {
     const email = userLogin.userInfo.data.email;
 
     const [count, setCount] = useState(0)//负责页面更新
+    
+    const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
+    const [followJournals, setFollowJournals] = useState<StarJournal[]>([]);
 
     const getRole = () => {
         let role = userInfo ? userInfo.data.username : null
@@ -47,8 +48,61 @@ const JournalDetail: React.FC = () => {
 
     // 表示本页的期刊
     const [thisJournal, setThisJournal] = useState<StarJournal>({ journalId: "", ccfRank: "" });
-
     const [comments, setComments] = useState<UserComment[]>([]);
+
+    useEffect(() => {
+        // 获取用户收藏的期刊列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(async response => {
+                console.log(response);
+                let data = response.data;
+                let records = data.data;
+                console.log(records)
+                let followJournals: Journal[] = records.followJournals
+                await Promise.all([
+                    // 过滤掉 null 和 undefined
+                    setFollowJournals(followJournals.filter(item => item != null)),
+                    setIsFollowed(followJournals.filter(item => item != null).some(journal => journal.journalId === id)),
+                ])
+                console.log("用户是否关注该期刊" + isFollowed)
+            })
+        getJournalDetails();
+        getComments();
+    }, []);
+
+    const getStarList = () => {
+        // 获取用户收藏的期刊列表
+        axios.get('http://124.220.14.106:9001/api/users/info', {
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                'Authorization': "Bearer " + token
+            },
+        })
+            .then(response => {
+                console.log(response);
+                let data = response.data;
+                console.log(data)
+                console.log(data.data);
+                let records = data.data;
+                console.log(records)
+                let followJournals: Journal[] = records.followJournals
+                // 过滤掉 null 和 undefined
+                setFollowJournals(followJournals.filter(item => item != null))
+                // 判断是否已经收藏/参加了该会议
+                const journalInFollowList = followJournals.some(journal => journal.journalId === id);
+                setIsFollowed(journalInFollowList);
+                console.log(isFollowed)
+            })
+            .catch(error => {
+                console.log('Error', error.message);
+            });
+    }
+
     const getComments = () => {
         //获取评论列表
         axios.get('http://124.220.14.106:9001/api/comments/' + id + '/comments', {
@@ -65,9 +119,7 @@ const JournalDetail: React.FC = () => {
     }
 
 
-    useEffect(() => {
-        getStarList();
-        getComments();
+    const getJournalDetails = () => {
         // 获取期刊详情
         axios.get('http://124.220.14.106:9001/api/journals/list/' + id + '/detail', {
             headers: {
@@ -99,37 +151,6 @@ const JournalDetail: React.FC = () => {
                     journalId: records.journalId,
                     ccfRank: records.ccfRank
                 });
-            })
-            .catch(error => {
-                console.log('Error', error.message);
-            });
-    }, []);
-
-    const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
-    const [followJournals, setFollowJournals] = useState<StarJournal[]>([]);
-
-    const getStarList = () => {
-        // 获取用户收藏的期刊列表
-        axios.get('http://124.220.14.106:9001/api/users/info', {
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-                'Authorization': "Bearer " + token
-            },
-        })
-            .then(response => {
-                console.log(response);
-                let data = response.data;
-                console.log(data)
-                console.log(data.data);
-                let records = data.data;
-                console.log(records)
-                let followJournals: Journal[] = records.followJournals
-                // 过滤掉 null 和 undefined
-                setFollowJournals(followJournals.filter(item => item != null))
-                // 判断是否已经收藏/参加了该会议
-                const journalInFollowList = followJournals.some(journal => journal.journalId === id);
-                setIsFollowed(journalInFollowList);
-                console.log(isFollowed)
             })
             .catch(error => {
                 console.log('Error', error.message);
@@ -278,7 +299,7 @@ const JournalDetail: React.FC = () => {
             <div className="left-sidebar">
                 <div className="detail-card">
                     <h2>{journalDetail.journalId}</h2>
-                    <p>💡 dblp: <a href={journalDetail.dblpLink} target="_blank">{journalDetail.dblpLink}</a></p>
+                    {journalDetail.dblpLink ? <p>💡 dblp: <a href={journalDetail.dblpLink} target="_blank">{journalDetail.dblpLink}</a></p> : ''}
                     <p>💡 期刊主页：<a href={journalDetail.mainpageLink} target="_blank">{journalDetail.mainpageLink}</a></p>
                     <p>📚 出版社：{journalDetail.publisher}</p>
                     <p>🪄 引用分数：{journalDetail.citeScore}</p>
