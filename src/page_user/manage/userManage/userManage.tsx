@@ -12,6 +12,7 @@ import {
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import Highlighter from 'react-highlight-words';
 
 export type User = {
     userName: string; //昵称
@@ -172,10 +173,80 @@ const UserManage: React.FC = () => {
     };
 
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+
+    const handleReset = clearFilters => {
+        clearFilters();
+        setSearchText('');
+    };
+
+    const getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
+                <Input
+                    placeholder={`搜索 ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        搜索
+                    </Button>
+                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+                        重置
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+        onFilter: (value, record) =>
+            record[dataIndex]
+                ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+                : '',
+        render: text =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+
 
     const userCols = [
-        { title: '🧑‍🎓用户名', dataIndex: 'userName', key: 'userName', align: 'center' },
-        { title: '📮邮箱', dataIndex: 'email', key: 'email', align: 'center' },
+        {
+            title: '🧑‍🎓用户名',
+            dataIndex: 'userName',
+            key: 'userName',
+            align: 'center',
+            ...getColumnSearchProps('userName')
+        },
+        {
+            title: '📮邮箱',
+            dataIndex: 'email',
+            key: 'email',
+            align: 'center',
+            ...getColumnSearchProps('email')
+        },
         { title: '🏢科研机构', dataIndex: 'institution', key: 'institution', align: 'center' },
         {
             title: '操作',

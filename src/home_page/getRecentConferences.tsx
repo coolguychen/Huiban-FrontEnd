@@ -1,6 +1,6 @@
 //TODO： 展示全部CCF会议
 import React, { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Tag } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -95,13 +95,13 @@ const RecentConferences: React.FC = () => {
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
                         backgroundColor = 'grey';
@@ -109,7 +109,7 @@ const RecentConferences: React.FC = () => {
                 }
 
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
         },

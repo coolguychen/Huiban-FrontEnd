@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { User } from "./userType"
 import { Link } from "react-router-dom";
 import { Conference } from "../conference/conferenceType";
-import { Button, Input, Table, Modal, Space, Popconfirm, Flex, message, Form } from "antd";
+import { Button, Input, Table, Modal, Space, Popconfirm, Flex, message, Form, Tag } from "antd";
 import Journal from "../journal/journalType";
 import { DeleteOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from "react-redux";
@@ -217,26 +217,27 @@ const UserInfo: React.FC = () => {
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
                 if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
+
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
                         backgroundColor = 'grey';
                         ccfRank = 'N'
                 }
+
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
-
             filters: [
                 {
                     text: 'A',
@@ -363,13 +364,13 @@ const UserInfo: React.FC = () => {
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
                         backgroundColor = 'grey';
@@ -377,7 +378,7 @@ const UserInfo: React.FC = () => {
                 }
 
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
 
@@ -483,26 +484,26 @@ const UserInfo: React.FC = () => {
             align: 'center',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
-                if (!ccfRank) return null; // 如果 ccfRank 为空，则不渲染
+                if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
 
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
-                        backgroundColor = '';
+                        backgroundColor = 'grey';
                         ccfRank = 'N'
                 }
 
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
             filters: [
@@ -744,11 +745,6 @@ const UserInfo: React.FC = () => {
                                     onChange={handleChange}
                                     placeholder="用户名" />
                             </div>
-                            {/* <div>
-                                <span>📧邮箱：</span>
-                                <Input type="text" name="email" value={editedUser.email}
-                                    onChange={handleChange} placeholder="邮箱" />
-                            </div> */}
                             <div>
                                 <span>🏢科研机构: </span>
                                 <Input type="text" name="institution" value={editedUser.institution}
@@ -779,24 +775,33 @@ const UserInfo: React.FC = () => {
                 <div className="follow-conference">
                     <h3 className="info">⭐ 收藏的会议</h3>
                     <div className="follow-list">
-                        <Table columns={followConferenceCols} dataSource={starConferences}
-                            style={{ margin: 16 }} pagination={paginationProps} />
+                        {
+                            starConferences.length === 0 ? <p>暂无收藏会议</p> :
+                                <Table columns={followConferenceCols} dataSource={starConferences}
+                                    style={{ margin: 16 }} pagination={paginationProps} />
+                        }
                     </div>
                 </div>
 
-                <div className="attend-conference">
+                <div className="follow-conference">
                     <h3 className="info">🧑‍💻 参加的会议</h3>
                     <div className="attend-list">
-                        <Table columns={attendConferenceCols} dataSource={attendConferences}
-                            style={{ margin: 16 }} pagination={paginationProps} />
+                        {
+                            attendConferences.length === 0 ? <p>暂无参加会议</p> :
+                                <Table columns={attendConferenceCols} dataSource={attendConferences}
+                                    style={{ margin: 16 }} pagination={paginationProps} />
+                        }
                     </div>
                 </div>
 
-                <div className="follow-journal">
+                <div className="follow-conference">
                     <h3 className="info">🧡 收藏的期刊</h3>
                     <div className="follow-list">
-                        <Table columns={followJournalCols} dataSource={starJournals}
+                        {
+                            starJournals.length === 0 ? <p>暂无收藏期刊</p> :
+                            <Table columns={followJournalCols} dataSource={starJournals}
                             style={{ margin: 16 }} pagination={paginationProps} />
+                        }
                     </div>
                 </div>
 

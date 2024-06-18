@@ -537,6 +537,10 @@ body {
   font-weight: bold;
 }
 
+.highlight {
+  background-color: gold;
+}
+
 .follow-card {
   background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255, 255, 255, 0.50) 47%, rgba(0, 0, 0, 0.50) 100%);
   background-blend-mode: screen;
@@ -652,6 +656,18 @@ body {
   border-radius: 10px;
   font-weight: 600;
 }
+
+.follow-conference {
+  background-color: rgba(249, 249, 249, 0.5);
+  /* background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%, 0.8); */
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px;
+  /* 添加阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
 
 /*科研直链*/
 .tools-card {

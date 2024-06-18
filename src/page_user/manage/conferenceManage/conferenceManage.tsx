@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Conference, EditConference } from "../../conference/conferenceType";
 import { Link } from "react-router-dom";
-import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Switch, Table, message } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, InputRef, Modal, Popconfirm, Row, Select, Space, Switch, Table, Tag, message } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from "moment";
 import { } from '@ant-design/icons';
@@ -20,7 +20,7 @@ const ConferenceManage: React.FC = () => {
     console.log(userLogin)
     const token = userLogin.userInfo.data.token;
     const [conferences, setConferences] = useState<Conference[]>([]);
-
+    const [initialConferences, setInitial] = useState<Conference[]>([]);
     const [count, setCount] = useState(0)//负责页面更新
 
     /**获取全部会议 */
@@ -55,6 +55,7 @@ const ConferenceManage: React.FC = () => {
                     });
                 }
                 setConferences(conferenceTmp);
+                setInitial(conferenceTmp)
                 console.log(conferenceTmp)
             })
             .catch(error => {
@@ -407,80 +408,53 @@ const ConferenceManage: React.FC = () => {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef<InputRef>(null);
 
-    const handleSearch = (
-        selectedKeys: string[],
-        confirm: (param?: FilterConfirmProps) => void,
-        dataIndex: DataIndex,
-    ) => {
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
     };
 
-    const handleReset = (clearFilters: () => void) => {
+    const handleReset = clearFilters => {
         clearFilters();
         setSearchText('');
     };
 
-    const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Conference> => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+    const getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
                 <Input
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
+                    placeholder={`搜索 ${dataIndex}`}
                     value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
                     style={{ marginBottom: 8, display: 'block' }}
                 />
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
                         icon={<SearchOutlined />}
                         size="small"
                         style={{ width: 90 }}
                     >
                         搜索
                     </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
+                    <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
                         重置
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        关闭
                     </Button>
                 </Space>
             </div>
         ),
-        filterIcon: (filtered: boolean) => (
-            <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-        ),
+        filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
         onFilter: (value, record) =>
             record[dataIndex]
-                .toString()
-                .toLowerCase()
-                .includes((value as string).toLowerCase()),
-        onFilterDropdownOpenChange: visible => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
+                ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+                : '',
         render: text =>
             searchedColumn === dataIndex ? (
                 <Highlighter
-                    highlightStyle={{ backgroundColor: 'gold', padding: 0 }}
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
                     searchWords={[searchText]}
                     autoEscape
                     textToHighlight={text ? text.toString() : ''}
@@ -489,7 +463,6 @@ const ConferenceManage: React.FC = () => {
                 text
             ),
     });
-
     // 定义列
     const conferenceCols = [
         {
@@ -498,9 +471,14 @@ const ConferenceManage: React.FC = () => {
             key: 'conferenceId',
             align: 'center',
             render: (text, record) => (
-                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
-                    {text}
-                </Link>
+                <a href={record.mainpageLink} target='_blank'>
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[searchText]}
+                        autoEscape
+                        textToHighlight={text ? text.toString() : ''}
+                    />
+                </a>
             ),
         },
         {
@@ -529,13 +507,13 @@ const ConferenceManage: React.FC = () => {
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
                         backgroundColor = 'grey';
@@ -543,7 +521,7 @@ const ConferenceManage: React.FC = () => {
                 }
 
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
 
@@ -593,6 +571,11 @@ const ConferenceManage: React.FC = () => {
             dataIndex: 'startTime',
             key: 'startTime',
             align: 'center',
+            sorter: (a, b) => {
+                const dateA = a.startTime ? moment(new Date(a.startTime)).format('YYYY-MM-DD') : '';
+                const dateB = b.startTime ? moment(new Date(b.startTime)).format('YYYY-MM-DD') : '';
+                return dateA.localeCompare(dateB, undefined, { numeric: true });
+            },
             render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
@@ -600,6 +583,11 @@ const ConferenceManage: React.FC = () => {
             dataIndex: 'endTime',
             key: 'endTime',
             align: 'center',
+            sorter: (a, b) => {
+                const dateA = a.endTime ? moment(new Date(a.endTime)).format('YYYY-MM-DD') : '';
+                const dateB = b.endTime ? moment(new Date(b.endTime)).format('YYYY-MM-DD') : '';
+                return dateA.localeCompare(dateB, undefined, { numeric: true });
+            },
             render: date => date && <span>{moment(new Date(date)).format('YYYY-MM-DD')}</span>
         },
         {
@@ -614,6 +602,11 @@ const ConferenceManage: React.FC = () => {
             dataIndex: 'acceptedRate',
             key: 'acceptedRate',
             align: 'center',
+            sorter: (a, b) => {
+                if (a.acceptedRate === null || a.acceptedRate === undefined) return 1;
+                if (b.acceptedRate === null || b.acceptedRate === undefined) return -1;
+                return a.acceptedRate - b.acceptedRate;
+            },
             render: acceptedRate => acceptedRate ? <span>{acceptedRate * 100 + '%'}</span> : <></>
         },
         {
@@ -833,6 +826,9 @@ const ConferenceManage: React.FC = () => {
                     <Form.Item>
                         <Button type="primary" onClick={() => setConferences(filterData(startDate, endDate))}>
                             筛选
+                        </Button>
+                        <Button style={{ marginLeft: "10px" }} type="primary" ghost onClick={() => setConferences(initialConferences)}>
+                            重置
                         </Button>
                     </Form.Item>
                 </Form>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef, message } from 'antd';
+import { Table, Space, Popconfirm, Button, Form, Row, Input, Col, Select, Modal, InputRef, message, Tag } from 'antd';
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -179,7 +179,16 @@ const JournalManage: React.FC = () => {
             key: 'journalId',
             align: 'center',
             ...getColumnSearchProps('journalId'), // 添加搜索
-            render: (text, record) => <Link to={`/journalDetail/${record.journalId}`}>{text}</Link>,//点击全称 跳转到期刊详情页
+            render: (text, record) => (
+                <Link to={`/journalDetail/${record.journalId}`}>
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[searchText]}
+                        autoEscape
+                        textToHighlight={text ? text.toString() : ''}
+                    />
+                </Link>
+            ),
         },
         {
             title: '🏷️类型',
@@ -233,26 +242,26 @@ const JournalManage: React.FC = () => {
             align: 'center',
             // 据不同的条件渲染为不同颜色，同时使该标签带有圆角
             render: (ccfRank) => {
-                if (!ccfRank) return null; // 如果 ccfRank 为空，则不渲染
+                if (!ccfRank) return null; // 如果 ccfRank 为空，则为N
 
                 let backgroundColor;
                 switch (ccfRank) {
                     case 'A':
-                        backgroundColor = 'pink';
+                        backgroundColor = 'red';
                         break;
                     case 'B':
                         backgroundColor = 'gold';
                         break;
                     case 'C':
-                        backgroundColor = 'honeydew';
+                        backgroundColor = 'green';
                         break;
                     default:
-                        backgroundColor = '';
+                        backgroundColor = 'grey';
                         ccfRank = 'N'
                 }
 
                 return (
-                    <span style={{ backgroundColor, padding: '5px', borderRadius: '5px' }}>{ccfRank}</span>
+                    <Tag color={backgroundColor}>{ccfRank}</Tag>
                 );
             },
             filters: [
