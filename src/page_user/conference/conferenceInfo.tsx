@@ -48,7 +48,7 @@ const ConferenceInfo: React.FC = () => {
                         endTime: records[i].endTime,  //结束时间
                         acceptedRate: records[i].acceptedRate, //接受率
                         place: records[i].place,
-                        isPostponed: records[i].isPostponed// 是否延期
+                        isPostponed: records[i].postponed// 是否延期
                     });
                 }
                 setConferences(conferenceTmp);
@@ -147,9 +147,15 @@ const ConferenceInfo: React.FC = () => {
             dataIndex: 'conferenceId',
             key: 'conferenceId',
             align: 'center',
+            ...getColumnSearchProps('conferenceId'), // 添加搜索
             render: (text, record) => (
                 <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
-                    {text}
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[searchText]}
+                        autoEscape
+                        textToHighlight={text ? text.toString() : ''}
+                    />
                 </Link>
             ),
         },
@@ -270,7 +276,8 @@ const ConferenceInfo: React.FC = () => {
             align: 'center',
             render: (isPostponed) => {
                 if (isPostponed) { // 如果延期
-                    return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
+                    return <Tag color='red'>延期</Tag>
+                    // <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
                 }
             }
         },

@@ -26,9 +26,9 @@ const ConferenceDetail: React.FC = () => {
 
     const [count, setCount] = useState(0)//负责页面更新
 
-    const getRole = () => {
-        let role = userInfo ? userInfo.data.username : null
-        return role
+    const getRoleAuth = () => {
+        let auth_num = userInfo ? userInfo.data.authorities.length : 0
+		return auth_num
     }
 
     const [comments, setComments] = useState<UserComment[]>([]);
@@ -402,7 +402,7 @@ const ConferenceDetail: React.FC = () => {
                         <p>当前暂无评论</p>
                     )}
                 </div>
-                {getRole() === 'admin' ?
+                {getRoleAuth() === 33 ?
                     <div className="comment-input"></div>
                     :
                     <>
@@ -420,7 +420,7 @@ const ConferenceDetail: React.FC = () => {
                         </div>
                     </>}
             </div>
-            {getRole() === 'admin' ?
+            {getRoleAuth() === 33 ?
                 <div></div>
                 :
                 <div className="right-sidebar">

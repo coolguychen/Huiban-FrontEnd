@@ -9,9 +9,9 @@ const NavBar = () => {
     const userLogin = useSelector((state: any) => state.userLogin)
     const { userInfo } = userLogin
 
-	const getRole = () => {
-		let role = userInfo ? userInfo.data.username : null
-		return role
+	const getRoleAuth = () => {
+		let auth_num = userInfo ? userInfo.data.authorities.length : 0
+		return auth_num
 	}
 
     const dispatch = useDispatch()
@@ -36,7 +36,7 @@ const NavBar = () => {
     }
 
     return (
-        getRole() === 'admin' ?
+        getRoleAuth() === 33 ?
             <>
                 <Navbar variant="light" expand="sm" bg="transparent">
                     <Container className="mynavbar" style={{ backgroundColor: '', marginLeft: '90px', marginRight: '0px' }}>
