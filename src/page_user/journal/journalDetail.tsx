@@ -25,7 +25,7 @@ const JournalDetail: React.FC = () => {
     const email = userLogin.userInfo.data.email;
 
     const [count, setCount] = useState(0)//负责页面更新
-    
+
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [followJournals, setFollowJournals] = useState<StarJournal[]>([]);
 
@@ -73,7 +73,7 @@ const JournalDetail: React.FC = () => {
             })
         getJournalDetails();
         getComments();
-    }, []);
+    }, [count]);
 
     const getStarList = () => {
         // 获取用户收藏的期刊列表
@@ -140,8 +140,8 @@ const JournalDetail: React.FC = () => {
                     dblpLink: records.dblpLink,
                     mainpageLink: records.mainpageLink,
                     followNum: records.followNum,
-                    impactFactor: records.impactFactor,
-                    citeScore: records.citeScore,
+                    impactFactor: records.impactFactor > 0 ? records.impactFactor : '',
+                    citeScore: records.citeScore > 0 ? records.citeScore : '',
                     publisher: records.publisher,
                     topicDetails: records.topicDetails
                 };

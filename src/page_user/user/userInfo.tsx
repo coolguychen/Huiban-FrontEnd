@@ -570,6 +570,7 @@ const UserInfo: React.FC = () => {
 
     const handleEditClick = () => {
         setEditing(true);
+        setEditedUser(userData)
     };
 
     const handleEditPasswordClick = () => {
@@ -799,8 +800,8 @@ const UserInfo: React.FC = () => {
                     <div className="follow-list">
                         {
                             starJournals.length === 0 ? <p>暂无收藏期刊</p> :
-                            <Table columns={followJournalCols} dataSource={starJournals}
-                            style={{ margin: 16 }} pagination={paginationProps} />
+                                <Table columns={followJournalCols} dataSource={starJournals}
+                                    style={{ margin: 16 }} pagination={paginationProps} />
                         }
                     </div>
                 </div>

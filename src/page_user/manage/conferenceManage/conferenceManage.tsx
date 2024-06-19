@@ -242,7 +242,7 @@ const ConferenceManage: React.FC = () => {
                         </Col>
                     </Row>
                     <Form.Item name="fullTitle" label="全称">
-                        <Input />
+                        <Input disabled />
                     </Form.Item>
                     <Form.Item name="dblpLink" label="DBLP链接">
                         <Input />
@@ -471,14 +471,9 @@ const ConferenceManage: React.FC = () => {
             key: 'conferenceId',
             align: 'center',
             render: (text, record) => (
-                <a href={record.mainpageLink} target='_blank'>
-                    <Highlighter
-                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                        searchWords={[searchText]}
-                        autoEscape
-                        textToHighlight={text ? text.toString() : ''}
-                    />
-                </a>
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
+                    {text}
+                </Link>
             ),
         },
         {

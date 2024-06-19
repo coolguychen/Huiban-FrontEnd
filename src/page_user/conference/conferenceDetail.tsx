@@ -121,7 +121,7 @@ const ConferenceDetail: React.FC = () => {
         // 设置延时执行获取会议详情
         getConferenceDetails();
         getComments();
-    }, []);
+    }, [count]);
 
     const getComments = () => {
         //获取评论列表

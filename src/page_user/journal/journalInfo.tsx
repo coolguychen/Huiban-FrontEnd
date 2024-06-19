@@ -41,8 +41,8 @@ const JournalInfo: React.FC = () => {
                         ccfRank: records[i].ccfRank,
                         sub: records[i].sub,
                         publisher: records[i].publisher,
-                        citeScore: records[i].citeScore,
-                        impactFactor: records[i].impactFactor
+                        citeScore: records[i].citeScore > 0 ? records[i].citeScore : '',
+                        impactFactor: records[i].impactFactor > 0 ? records[i].impactFactor : '',
                     });
                 }
                 setJournals(journalTmp);
