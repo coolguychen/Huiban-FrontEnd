@@ -177,6 +177,7 @@ const ConferenceManage: React.FC = () => {
                             console.log(year)
                             values.year = year
                             values.conferenceId = `${values.title}${values.year}`;
+                            values.title = values.fullTitle
 
                             console.log(values)
                             form.resetFields();
@@ -242,7 +243,7 @@ const ConferenceManage: React.FC = () => {
                         </Col>
                     </Row>
                     <Form.Item name="fullTitle" label="全称">
-                        <Input disabled />
+                        <Input />
                     </Form.Item>
                     <Form.Item name="dblpLink" label="DBLP链接">
                         <Input />
