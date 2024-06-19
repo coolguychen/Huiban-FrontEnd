@@ -22,9 +22,9 @@ function App() {
 	const { userInfo } = userLogin
 	// const role = userInfo.data.username // 用户角色'
 
-	const getRole = () => {
-		let role = userInfo ? userInfo.data.username : null
-		return role
+	const getRoleAuth = () => {
+		let auth_num = userInfo ? userInfo.data.authorities.length : 0
+		return auth_num
 	}
 
 	return (
@@ -41,7 +41,7 @@ function App() {
 			</>
 
 			<div className="App">
-				{getRole() === 'admin' ?
+				{getRoleAuth() === 33 ?
 					<Routes>
 						<Route path='/login' element={<Login />} />
 						<Route path='/register' element={<Register />} />

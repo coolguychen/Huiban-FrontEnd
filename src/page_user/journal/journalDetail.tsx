@@ -25,14 +25,15 @@ const JournalDetail: React.FC = () => {
     const email = userLogin.userInfo.data.email;
 
     const [count, setCount] = useState(0)//负责页面更新
-    
+
     const [isFollowed, setIsFollowed] = useState(false); // 初始状态设为未关注
     const [followJournals, setFollowJournals] = useState<StarJournal[]>([]);
 
-    const getRole = () => {
-        let role = userInfo ? userInfo.data.username : null
-        return role
+    const getRoleAuth = () => {
+        let auth_num = userInfo ? userInfo.data.authorities.length : 0
+        return auth_num
     }
+
     const [journalDetail, setJournalDetail] = useState<DetailJournal>({
         journalId: "",
         ccfRank: "",
@@ -331,7 +332,7 @@ const JournalDetail: React.FC = () => {
                         <p>当前暂无评论</p>
                     )}
                 </div>
-                {getRole() === 'admin' ?
+                {getRoleAuth() === 33 ?
                     <div className="comment-input">
                     </div>
                     :
@@ -349,7 +350,7 @@ const JournalDetail: React.FC = () => {
                     </div>
                 }
             </div>
-            {getRole() === 'admin' ?
+            {getRoleAuth() === 33 ?
                 <div>
                 </div>
                 :

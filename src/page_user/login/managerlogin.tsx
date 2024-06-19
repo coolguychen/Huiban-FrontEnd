@@ -57,8 +57,8 @@ const ManagerLogin: React.FC = () => {
                 >
                     <Form.Item
                         name="username"
-                        label="用户名"
-                        rules={[{ required: true, message: '请输入用户名!' }]}
+                        label="管理员账号"
+                        rules={[{ required: true, message: '请输入管理员账号!' }]}
                     >
                         <Input onChange={(e) => setEmail(e.target.value)} />
                     </Form.Item>
