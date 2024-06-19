@@ -243,10 +243,13 @@ const ConferenceDetail: React.FC = () => {
                 // 更新关注状态
                 setIsFollowed(!isFollowed);
                 // 显示相应的消息
-                Modal.success({
-                    title: isFollowed ? '取消关注成功' : '关注成功',
-                    content: isFollowed ? '您已成功取消关注。' : '您已成功关注！',
-                });
+                message.success(
+                    isFollowed ? '取消关注成功' : '关注成功'
+                )
+                // Modal.success({
+                //     title: isFollowed ? '取消关注成功' : '关注成功',
+                //     content: isFollowed ? '您已成功取消关注。' : '您已成功关注！',
+                // });
                 // 更新关注列表
                 if (isFollowed) {
                     // 如果之前已经关注了，现在是取消关注
@@ -290,10 +293,11 @@ const ConferenceDetail: React.FC = () => {
                 // 更新关注状态
                 setIsAttended(!isAttended);
                 // 显示相应的消息
-                Modal.success({
-                    title: isAttended ? '取消参加成功' : '参加成功',
-                    content: isAttended ? '您已成功取消参加。' : '您已成功参加！',
-                });
+                message.success(isAttended ? '取消参加成功' : '参加成功',)
+                // Modal.success({
+                //     title: isAttended ? '取消参加成功' : '参加成功',
+                //     content: isAttended ? '您已成功取消参加。' : '您已成功参加！',
+                // });
             } else {
                 // 如果失败
                 Modal.error({

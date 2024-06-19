@@ -174,10 +174,11 @@ const JournalDetail: React.FC = () => {
                 // 更新关注状态
                 setIsFollowed(!isFollowed);
                 // 显示相应的消息
-                Modal.success({
-                    title: isFollowed ? '取消关注成功' : '关注成功',
-                    content: isFollowed ? '您已成功取消关注。' : '您已成功关注！',
-                });
+                message.success(isFollowed ? '取消关注成功' : '关注成功',)
+                // Modal.success({
+                //     title: isFollowed ? '取消关注成功' : '关注成功',
+                //     content: isFollowed ? '您已成功取消关注。' : '您已成功关注！',
+                // });
                 // 更新关注列表
                 if (isFollowed) {
                     // 如果之前已经关注了，现在是取消关注
