@@ -51,7 +51,7 @@ const ConferenceManage: React.FC = () => {
                         endTime: records[i].endTime,  //结束时间
                         acceptedRate: records[i].acceptedRate, //接受率
                         place: records[i].place,
-                        isPostponed: records[i].isPostponed// 是否延期
+                        isPostponed: records[i].postponed// 是否延期
                     });
                 }
                 setConferences(conferenceTmp);
@@ -470,6 +470,24 @@ const ConferenceManage: React.FC = () => {
             dataIndex: 'conferenceId',
             key: 'conferenceId',
             align: 'center',
+            ...getColumnSearchProps('conferenceId'), // 添加搜索
+            render: (text, record) => (
+                <Link to={`/conferenceDetail/${record.conferenceId}`} style={{ color: 'blue', fontWeight: 'bold' }}>
+                    <Highlighter
+                        highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                        searchWords={[searchText]}
+                        autoEscape
+                        textToHighlight={text ? text.toString() : ''}
+                    />
+                </Link>
+            ),
+        },
+        {
+            title: '📖全称',
+            dataIndex: 'fullTitle',
+            key: 'fullTitle',
+            align: 'center',
+            ...getColumnSearchProps('fullTitle'), // 添加搜索
             render: (text, record) => (
                 <a href={record.mainpageLink} target='_blank'>
                     <Highlighter
@@ -480,14 +498,6 @@ const ConferenceManage: React.FC = () => {
                     />
                 </a>
             ),
-        },
-        {
-            title: '📖全称',
-            dataIndex: 'fullTitle',
-            key: 'fullTitle',
-            align: 'center',
-            ...getColumnSearchProps('fullTitle'), // 添加搜索
-            render: (text, record) => <a href={record.mainpageLink} target='_blank'>{text}</a> //点击全称 跳转到主页
         },
         {
             title: '🏷️类型',
@@ -591,7 +601,7 @@ const ConferenceManage: React.FC = () => {
             align: 'center',
             render: (isPostponed) => {
                 if (isPostponed) { // 如果延期
-                    return <span style={{ backgroundColor: 'red', padding: '5px', borderRadius: '5px' }}>延期</span>
+                    return <Tag color='red'>延期</Tag>
                 }
             }
         },
@@ -694,23 +704,6 @@ const ConferenceManage: React.FC = () => {
             );
         });
     };
-
-    // 处理日期变化
-    // const handleDateChange = (field, value) => {
-    //     console.log(value)
-    //     if (field === 'startDate') {
-    //         setStartDate(value);
-    //         console.log(value)
-    //     } else if (field === 'endDate') {
-    //         setEndDate(value);
-    //         console.log(endDate)
-
-    //     }
-    //     // 重新筛选数据
-    //     const filteredData = filterData(startDate, endDate);
-    //     setConferences(filteredData);
-    // };
-
 
     const handleDateChange = (field, value) => {
         console.log(value);
